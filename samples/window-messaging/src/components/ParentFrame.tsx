@@ -36,7 +36,6 @@ function ParentFrame() {
       requestHandlers
     );
     hub.addEventListener("registerWindowMessenger", (evt) => {
-      console.log(evt);
       setChildMessenger(evt.windowMessenger);
     });
   });

@@ -4,6 +4,7 @@ import {
   isWindowMessage,
   isWindowMessageResponse,
   isWindowRequest,
+  SystemMessageTypes,
 } from "./internals";
 import { IWindowMessageResponse } from "./interfaces";
 import { MessageHandler, RequestHandler } from "./types";
@@ -48,7 +49,7 @@ export class WindowMessagingHub extends EventEmitter {
       this.messageHandlers = messageHandlers;
     }
 
-    this.listenForIncomingMessages();
+    window.addEventListener("message", this.onIncomingMessage.bind(this));
   }
 
   /**
@@ -69,7 +70,8 @@ export class WindowMessagingHub extends EventEmitter {
     this.emit("registerWindowMessenger", {
       windowMessenger,
     });
-    // TODO: wait until child window has sent first message before returning
+    // Send confirmation so that other window knows that the registration occurred
+    windowMessenger.sendMessage(SystemMessageTypes.INITIALIZE);
     return Promise.resolve(windowMessenger);
   }
 
@@ -105,10 +107,6 @@ export class WindowMessagingHub extends EventEmitter {
    * MARK: private methods
    */
 
-  private listenForIncomingMessages() {
-    window.addEventListener("message", this.onIncomingMessage.bind(this));
-  }
-
   private async onIncomingMessage(ev: MessageEvent<any>) {
     // if (ev.origin === window.origin) return;
     if (!this.allowedMessageOrigins.includes(ev.origin)) {
@@ -136,7 +134,11 @@ export class WindowMessagingHub extends EventEmitter {
               decoded.windowId
             );
           }
+          // If initial system message
+          if (decoded.messageType === SystemMessageTypes.INITIALIZE) return;
+          // Handle non-system message/request
           if (isWindowMessageResponse(decoded)) {
+            // The message is an incoming request to resolve a pending request
             windowMessenger.onReceivedWindowMessage(decoded);
           } else if (isWindowRequest(decoded)) {
             // The message sender is expecting a response

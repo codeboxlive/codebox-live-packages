@@ -58,7 +58,7 @@ function ChildFrame() {
           >
             {"Send value to parent"}
           </button>
-          <div>{number}</div>
+          <h2>{number}</h2>
         </>
       )}
       {error && (
