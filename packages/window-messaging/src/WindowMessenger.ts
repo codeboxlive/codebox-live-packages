@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import { isWindowMessageResponse, IWindowMessageResponse } from "../interfaces";
-import { IWindowMessage, IWindowRequest } from "./interfaces";
+import { v4 as uuid } from "uuid";
+import { IWindowMessageResponse } from "./interfaces";
+import { IWindowMessage, IWindowRequest } from "./internals/interfaces";
 
 export class MessageRequestCallbacks<T> {
   public readonly resolveCallback: (arg0: T) => void;
@@ -17,19 +17,17 @@ export class MessageRequestCallbacks<T> {
 
 export class WindowMessenger {
   private readonly _id: string;
+  private readonly _localWindowId: string;
   private readonly otherWindow: Window;
   private readonly pendingRequests = new Map<
     string,
     MessageRequestCallbacks<any>
   >();
 
-  constructor(otherWindow: Window) {
-    this._id = uuidv4();
+  constructor(id: string, localWindowId: string, otherWindow: Window) {
+    this._id = id;
+    this._localWindowId = localWindowId;
     this.otherWindow = otherWindow;
-    this.otherWindow.addEventListener(
-      "message",
-      this.onReceivedWindowMessage.bind(this)
-    );
   }
 
   /**
@@ -43,44 +41,6 @@ export class WindowMessenger {
   /**
    * SECTION: private methods
    */
-
-  private onReceivedWindowMessage(event: MessageEvent<any>) {
-    console.log(event);
-    const data = event.data;
-    try {
-      const decoded = JSON.parse(data);
-      if (isWindowMessageResponse(decoded)) {
-        const pendingRequest = this.pendingRequests.get(decoded.messageId);
-        if (pendingRequest) {
-          try {
-            if (decoded.errorMessage) {
-              // Handle error
-              pendingRequest.rejectCallback(
-                new Error(decoded.errorMessage ?? "An unknown error occurred")
-              );
-            } else {
-              // Handle success
-              console.log(
-                "WindowMessagingApi: Received successful response",
-                decoded.response
-              );
-              pendingRequest.resolveCallback(decoded!.response);
-            }
-          } catch {
-            (error: Error) => {
-              // Type binding error
-              pendingRequest.rejectCallback(error);
-            };
-          }
-          this.pendingRequests.delete(decoded.messageId);
-        }
-      }
-    } catch {
-      (err: Error) => {
-        console.error(err);
-      };
-    }
-  }
 
   private sendMessageToWindow(
     message:
@@ -104,7 +64,7 @@ export class WindowMessenger {
 
   public sendRequest<X>(messageType: string, messageBody?: object): Promise<X> {
     return new Promise((resolve, reject) => {
-      const messageId = uuidv4();
+      const messageId = uuid();
       this.pendingRequests.set(
         messageId,
         new MessageRequestCallbacks<X>(resolve, reject)
@@ -128,19 +88,40 @@ export class WindowMessenger {
     });
   }
 
-  public sendRequestResponse(
-    response: IWindowMessageResponse<object | undefined>
-  ) {
+  public sendRequestResponse(response: IWindowMessageResponse<object | null>) {
     this.sendMessageToWindow({
-      windowId: this.id,
+      windowId: this._id,
       ...response,
     });
   }
 
-  public dispose() {
-    this.otherWindow.removeEventListener(
-      "message",
-      this.onReceivedWindowMessage.bind(this)
-    );
+  public onReceivedWindowMessage(
+    response: IWindowMessageResponse<object | null>
+  ) {
+    const pendingRequest = this.pendingRequests.get(response.messageId);
+    console.log(pendingRequest);
+    if (pendingRequest) {
+      try {
+        if (response.errorMessage) {
+          // Handle error
+          pendingRequest.rejectCallback(
+            new Error(response.errorMessage ?? "An unknown error occurred")
+          );
+        } else {
+          // Handle success
+          console.log(
+            "WindowMessagingApi: Received successful response",
+            response.response
+          );
+          pendingRequest.resolveCallback(response!.response);
+        }
+      } catch {
+        (error: Error) => {
+          // Type binding error
+          pendingRequest.rejectCallback(error);
+        };
+      }
+      this.pendingRequests.delete(response.messageId);
+    }
   }
 }

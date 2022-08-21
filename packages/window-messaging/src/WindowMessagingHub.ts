@@ -1,26 +1,35 @@
-import { WindowMessenger } from "./internals/WindowMessenger";
-import { isWindowMessage, isWindowRequest } from "./internals/interfaces";
+import { WindowMessenger } from "./WindowMessenger";
+import {
+  isWindow,
+  isWindowMessage,
+  isWindowMessageResponse,
+  isWindowRequest,
+} from "./internals";
 import { IWindowMessageResponse } from "./interfaces";
-
-type RequestHandler<
-  MessageData extends object | undefined,
-  ResponseType extends object | undefined
-> = (data: MessageData) => Promise<ResponseType>;
-type MessageHandler<MessageData extends object | undefined> = (
-  data: MessageData
-) => void;
+import { MessageHandler, RequestHandler } from "./types";
+import { v4 as uuid } from "uuid";
 
 export class WindowMessagingHub {
+  private static localWindowId = uuid();
   private static isInitialized = false;
   private static allowedMessageOrigins: string[] = [];
-  private static requestHandlers = new Map<string, RequestHandler<any, any>>();
-  private static messageHandlers = new Map<string, MessageHandler<any>>();
+  private static requestHandlers = new Map<
+    string,
+    RequestHandler<object | undefined, object | null>
+  >();
+  private static messageHandlers = new Map<
+    string,
+    MessageHandler<object | undefined>
+  >();
   private static registeredWindows = new Map<string, WindowMessenger>();
 
   public static initialize(
     allowedMessageOrigins: string[],
-    requestHandlers?: Map<string, RequestHandler<any, any>>,
-    messageHandlers?: Map<string, MessageHandler<any>>
+    requestHandlers?: Map<
+      string,
+      RequestHandler<object | undefined, object | null>
+    >,
+    messageHandlers?: Map<string, MessageHandler<object | undefined>>
   ) {
     if (this.isInitialized) return;
     if (requestHandlers) {
@@ -35,18 +44,22 @@ export class WindowMessagingHub {
   }
 
   public static registerWindowMessenger(
-    otherWindow: Window
+    otherWindow: Window,
+    knownWindowId?: string
   ): Promise<WindowMessenger> {
-    const windowMessager = new WindowMessenger(otherWindow);
-    const id = windowMessager.id;
-    this.registeredWindows.set(id, windowMessager);
+    const windowId = knownWindowId ?? uuid();
+    const windowMessager = new WindowMessenger(
+      windowId,
+      this.localWindowId,
+      otherWindow
+    );
+    this.registeredWindows.set(windowId, windowMessager);
+    console.log("registering", windowId);
     // TODO: wait until child window has sent first message before returning
     return Promise.resolve(windowMessager);
   }
 
   public static unregisterWindowMessenger(id: string) {
-    const registeredWindow = this.registeredWindows.get(id);
-    registeredWindow?.dispose();
     this.registeredWindows.delete(id);
   }
 
@@ -56,9 +69,12 @@ export class WindowMessagingHub {
   }
 
   private static async onIncomingMessage(ev: MessageEvent<any>) {
+    if (ev.origin === window.origin) return;
     if (!WindowMessagingHub.allowedMessageOrigins.includes(ev.origin)) {
-      console.error(
-        "WindowMessagingHub: message received from untrusted message origin"
+      console.warn(
+        new Error(
+          `WindowMessagingHub: received message from untrusted origin of ${ev.origin}`
+        )
       );
       return;
     }
@@ -66,36 +82,55 @@ export class WindowMessagingHub {
 
     const data = ev.data;
     // Verify that source is a window
-    if (source instanceof Window) {
+    if (isWindow(source)) {
       try {
         const decoded = JSON.parse(data);
+
         if (isWindowMessage(decoded)) {
           let windowMessenger = this.registeredWindows.get(decoded.windowId);
           if (!windowMessenger) {
             // Register
-            windowMessenger = await this.registerWindowMessenger(source);
+            windowMessenger = await this.registerWindowMessenger(
+              source,
+              decoded.windowId
+            );
           }
-          if (isWindowRequest(decoded)) {
+          console.log(ev);
+          if (isWindowMessageResponse(decoded)) {
+            console.log("response");
+            windowMessenger.onReceivedWindowMessage(decoded);
+          } else if (isWindowRequest(decoded)) {
+            console.log("request");
             // The message sender is expecting a response
-            let responseMessage: IWindowMessageResponse<any>;
+            let responseMessage: IWindowMessageResponse<object | null>;
             const requestHandler = this.requestHandlers.get(
               decoded.messageType
             );
             if (requestHandler) {
-              // Handle the request
-              const requestResponseData = await requestHandler(
-                decoded.messageBody
-              );
-              responseMessage = {
-                messageType: decoded.messageType,
-                messageId: decoded.messageId,
-                response: requestResponseData,
-              };
+              try {
+                // Handle the request
+                const requestResponseData = await requestHandler(
+                  decoded.messageBody
+                );
+                responseMessage = {
+                  messageType: decoded.messageType,
+                  messageId: decoded.messageId,
+                  response: requestResponseData ?? null,
+                };
+              } catch (err: any) {
+                responseMessage = {
+                  messageType: decoded.messageType,
+                  messageId: decoded.messageId,
+                  response: null,
+                  errorMessage: err.message ?? "An unknown error occurred",
+                };
+              }
             } else {
               // Return an error signaling the type is not valid
               responseMessage = {
                 messageType: decoded.messageType,
                 messageId: decoded.messageId,
+                response: null,
                 errorMessage: "Unable to find a response",
               };
             }
