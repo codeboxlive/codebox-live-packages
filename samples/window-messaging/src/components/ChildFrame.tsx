@@ -1,20 +1,11 @@
 import {
   WindowMessagingHub,
-  RequestHandler,
   WindowMessenger,
 } from "@codeboxlive/window-messaging";
 import { useEffect, useRef, useState } from "react";
-import "./App.css";
+import { ITestResponse } from "../interfaces";
 
-interface ITestMessageBody {
-  value: number;
-}
-
-interface ITestResponse {
-  value: number;
-}
-
-function App() {
+function ChildFrame() {
   const [windowMessenger, setWindowMessenger] = useState<WindowMessenger>();
   const [number, setNumber] = useState(0);
   const [error, setError] = useState<Error>();
@@ -25,21 +16,7 @@ function App() {
     initializedRef.current = true;
     const setupHub = async () => {
       // Set up hub
-      const requestHandlers = new Map<string, RequestHandler<any, any>>();
-      const testRequestHandler: RequestHandler<
-        ITestMessageBody,
-        ITestResponse
-      > = (data: ITestMessageBody): Promise<ITestResponse> => {
-        return new Promise<ITestResponse>((resolve) => {
-          setTimeout(() => {
-            resolve({
-              value: data.value * 10,
-            });
-          }, 50);
-        });
-      };
-      requestHandlers.set("test", testRequestHandler);
-      WindowMessagingHub.initialize(["http://localhost:3000"], requestHandlers);
+      WindowMessagingHub.initialize([window.location.origin]);
       const parentMessenger = await WindowMessagingHub.registerWindowMessenger(
         parent
       );
@@ -49,9 +26,8 @@ function App() {
   });
 
   return (
-    <div className="App">
-      <h1>iFrame Test Child</h1>
-      {!windowMessenger && <div>loading</div>}
+    <>
+      {!windowMessenger && <div>{"loading..."}</div>}
       {windowMessenger && (
         <>
           <button
@@ -61,18 +37,16 @@ function App() {
                   value: number,
                 })
                 .then((response) => {
-                  console.log(response);
                   setNumber(response.value);
                 })
                 .catch((err) => {
-                  console.log("child received error");
                   if (err instanceof Error) {
                     setError(err);
                   }
                 });
             }}
           >
-            Send value to parent
+            {"Send value to parent"}
           </button>
           <div>{number}</div>
         </>
@@ -90,8 +64,8 @@ function App() {
           </button>
         </>
       )}
-    </div>
+    </>
   );
 }
 
-export default App;
+export default ChildFrame;

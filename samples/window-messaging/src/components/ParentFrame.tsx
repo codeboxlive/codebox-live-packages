@@ -2,19 +2,10 @@ import {
   WindowMessagingHub,
   RequestHandler,
 } from "@codeboxlive/window-messaging";
-import { useEffect, useRef, useState } from "react";
-import "./App.css";
+import { useEffect, useRef } from "react";
+import { ITestMessageBody, ITestResponse } from "../interfaces";
 
-interface ITestMessageBody {
-  value: number;
-}
-
-interface ITestResponse {
-  value: number;
-}
-
-function App() {
-  const [count, setCount] = useState(0);
+function ParentFrame() {
   const initializedRef = useRef(false);
   const iFrameRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -38,20 +29,19 @@ function App() {
       });
     };
     requestHandlers.set("test", testRequestHandler);
-    WindowMessagingHub.initialize(["http://localhost:3001"], requestHandlers);
+    WindowMessagingHub.initialize([window.location.origin], requestHandlers);
   });
 
   return (
-    <div className="App">
-      <h1>Parent Test</h1>
+    <>
       <iframe
         ref={iFrameRef}
         width={720}
         height={520}
-        src="http://localhost:3001"
+        src={window.location.origin}
       />
-    </div>
+    </>
   );
 }
 
-export default App;
+export default ParentFrame;

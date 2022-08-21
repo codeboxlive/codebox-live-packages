@@ -54,7 +54,6 @@ export class WindowMessagingHub {
       otherWindow
     );
     this.registeredWindows.set(windowId, windowMessager);
-    console.log("registering", windowId);
     // TODO: wait until child window has sent first message before returning
     return Promise.resolve(windowMessager);
   }
@@ -69,7 +68,7 @@ export class WindowMessagingHub {
   }
 
   private static async onIncomingMessage(ev: MessageEvent<any>) {
-    if (ev.origin === window.origin) return;
+    // if (ev.origin === window.origin) return;
     if (!WindowMessagingHub.allowedMessageOrigins.includes(ev.origin)) {
       console.warn(
         new Error(
@@ -95,12 +94,9 @@ export class WindowMessagingHub {
               decoded.windowId
             );
           }
-          console.log(ev);
           if (isWindowMessageResponse(decoded)) {
-            console.log("response");
             windowMessenger.onReceivedWindowMessage(decoded);
           } else if (isWindowRequest(decoded)) {
-            console.log("request");
             // The message sender is expecting a response
             let responseMessage: IWindowMessageResponse<object | null>;
             const requestHandler = this.requestHandlers.get(
@@ -152,9 +148,7 @@ export class WindowMessagingHub {
           }
         }
       } catch (err: any) {
-        if (err instanceof Error) {
-          console.error(err);
-        }
+        // Message is not valid JSON...likely message from different source
       }
     } else {
       console.error(

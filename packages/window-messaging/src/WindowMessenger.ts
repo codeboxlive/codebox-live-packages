@@ -99,7 +99,6 @@ export class WindowMessenger {
     response: IWindowMessageResponse<object | null>
   ) {
     const pendingRequest = this.pendingRequests.get(response.messageId);
-    console.log(pendingRequest);
     if (pendingRequest) {
       try {
         if (response.errorMessage) {
@@ -109,10 +108,6 @@ export class WindowMessenger {
           );
         } else {
           // Handle success
-          console.log(
-            "WindowMessagingApi: Received successful response",
-            response.response
-          );
           pendingRequest.resolveCallback(response!.response);
         }
       } catch {
