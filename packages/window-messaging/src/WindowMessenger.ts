@@ -16,17 +16,24 @@ export class MessageRequestCallbacks<T> {
 }
 
 export class WindowMessenger {
+  private readonly hubKey: string;
   private readonly _id: string;
-  private readonly _localWindowId: string;
+  private readonly localWindowId: string;
   private readonly otherWindow: Window;
   private readonly pendingRequests = new Map<
     string,
     MessageRequestCallbacks<any>
   >();
 
-  constructor(id: string, localWindowId: string, otherWindow: Window) {
+  constructor(
+    hubKey: string,
+    id: string,
+    localWindowId: string,
+    otherWindow: Window
+  ) {
+    this.hubKey = hubKey;
     this._id = id;
-    this._localWindowId = localWindowId;
+    this.localWindowId = localWindowId;
     this.otherWindow = otherWindow;
   }
 
@@ -70,6 +77,7 @@ export class WindowMessenger {
         new MessageRequestCallbacks<X>(resolve, reject)
       );
       this.sendMessageToWindow({
+        hubKey: this.hubKey,
         windowId: this.id,
         messageId,
         messageType,
@@ -82,6 +90,7 @@ export class WindowMessenger {
 
   public sendMessage(messageType: string, messageBody?: object) {
     this.sendMessageToWindow({
+      hubKey: this.hubKey,
       windowId: this.id,
       messageType,
       messageBody,
@@ -90,6 +99,7 @@ export class WindowMessenger {
 
   public sendRequestResponse(response: IWindowMessageResponse<object | null>) {
     this.sendMessageToWindow({
+      hubKey: this.hubKey,
       windowId: this._id,
       ...response,
     });

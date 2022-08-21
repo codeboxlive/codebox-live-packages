@@ -20,7 +20,8 @@ export interface MediaPlayerSynchronizerEvents {
 }
 
 export class WindowMessagingHub extends EventEmitter {
-  private localWindowId = uuid();
+  private readonly hubKey: string;
+  private readonly localWindowId = uuid();
   private allowedMessageOrigins: string[] = [];
   private requestHandlers = new Map<
     string,
@@ -33,6 +34,7 @@ export class WindowMessagingHub extends EventEmitter {
   private registeredWindows = new Map<string, WindowMessenger>();
 
   constructor(
+    hubKey: string,
     allowedMessageOrigins: string[],
     requestHandlers?: Map<
       string,
@@ -41,6 +43,7 @@ export class WindowMessagingHub extends EventEmitter {
     messageHandlers?: Map<string, MessageHandler<object | undefined>>
   ) {
     super();
+    this.hubKey = hubKey;
     this.allowedMessageOrigins = allowedMessageOrigins;
     if (requestHandlers) {
       this.requestHandlers = requestHandlers;
@@ -62,6 +65,7 @@ export class WindowMessagingHub extends EventEmitter {
   ): Promise<WindowMessenger> {
     const windowId = knownWindowId ?? uuid();
     const windowMessenger = new WindowMessenger(
+      this.hubKey,
       windowId,
       this.localWindowId,
       otherWindow
@@ -108,7 +112,6 @@ export class WindowMessagingHub extends EventEmitter {
    */
 
   private async onIncomingMessage(ev: MessageEvent<any>) {
-    // if (ev.origin === window.origin) return;
     if (!this.allowedMessageOrigins.includes(ev.origin)) {
       console.warn(
         new Error(
@@ -118,14 +121,15 @@ export class WindowMessagingHub extends EventEmitter {
       return;
     }
     const source = ev.source;
-
     const data = ev.data;
     // Verify that source is a window
     if (isWindow(source)) {
       try {
         const decoded = JSON.parse(data);
-
         if (isWindowMessage(decoded)) {
+          // If message is from a different hub, ignore the message
+          if (decoded.hubKey !== this.hubKey) return;
+          // Check if window already has a registered messenger
           let windowMessenger = this.registeredWindows.get(decoded.windowId);
           if (!windowMessenger) {
             // Register

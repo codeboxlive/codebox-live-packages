@@ -4,6 +4,7 @@ import {
   WindowMessenger,
 } from "@codeboxlive/window-messaging";
 import { useEffect, useRef, useState } from "react";
+import { HUB_KEY, TEST_MESSAGE_KEY, TEST_REQUEST_KEY } from "../constants";
 import { ITestRequestBody, ITestResponse } from "../interfaces";
 
 function ParentFrame() {
@@ -30,8 +31,9 @@ function ParentFrame() {
         }
       });
     };
-    requestHandlers.set("test-request", testRequestHandler);
+    requestHandlers.set(TEST_REQUEST_KEY, testRequestHandler);
     const hub = new WindowMessagingHub(
+      HUB_KEY,
       [window.location.origin],
       requestHandlers
     );
@@ -47,7 +49,7 @@ function ParentFrame() {
           disabled={!childMessenger}
           onClick={() => {
             // Send a one-way message to child
-            childMessenger?.sendMessage("test-message", {
+            childMessenger?.sendMessage(TEST_MESSAGE_KEY, {
               randomNumber: Math.round(Math.random() * 100),
             });
           }}

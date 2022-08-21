@@ -1,4 +1,5 @@
 export interface IWindowMessage<T extends object | undefined> {
+  hubKey: string;
   windowId: string;
   messageType: string;
   messageBody?: T;

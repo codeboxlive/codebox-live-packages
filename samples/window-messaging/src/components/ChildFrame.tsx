@@ -4,6 +4,7 @@ import {
   WindowMessenger,
 } from "@codeboxlive/window-messaging";
 import { useEffect, useRef, useState } from "react";
+import { HUB_KEY, TEST_MESSAGE_KEY, TEST_REQUEST_KEY } from "../constants";
 import { ITestMessageBody, ITestResponse } from "../interfaces";
 
 function ChildFrame() {
@@ -22,8 +23,9 @@ function ChildFrame() {
       const testMessageHandler: MessageHandler<ITestMessageBody> = (evt) => {
         setRandomNumber(evt.randomNumber);
       };
-      messageHandlers.set("test-message", testMessageHandler);
+      messageHandlers.set(TEST_MESSAGE_KEY, testMessageHandler);
       const hub = new WindowMessagingHub(
+        HUB_KEY,
         [window.location.origin],
         undefined,
         messageHandlers
@@ -43,7 +45,7 @@ function ChildFrame() {
             onClick={() => {
               // Send a request to parent to change the number
               windowMessenger
-                .sendRequest<ITestResponse>("test-request", {
+                .sendRequest<ITestResponse>(TEST_REQUEST_KEY, {
                   value: number,
                 })
                 .then((response) => {
@@ -56,14 +58,14 @@ function ChildFrame() {
                 });
             }}
           >
-            {"Send value to parent"}
+            {"Get number from parent"}
           </button>
           <h2>{number}</h2>
         </>
       )}
       {error && (
         <>
-          <div style={{ color: "red", marginTop: "24px" }}>{error.message}</div>
+          <div style={{ color: "red" }}>{error.message}</div>
           <button
             onClick={() => {
               // Reset number and error
@@ -75,9 +77,10 @@ function ChildFrame() {
           </button>
         </>
       )}
-      <div style={{ marginTop: "12px" }}>
-        {`Last random number from parent: ${randomNumber ?? "N/A"}`}
+      <div style={{ marginTop: "24px" }}>
+        {"Last random number from parent:"}
       </div>
+      <h2>{randomNumber ?? "N/A"}</h2>
     </>
   );
 }
