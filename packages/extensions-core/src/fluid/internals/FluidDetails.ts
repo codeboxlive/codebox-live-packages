@@ -6,7 +6,7 @@ import {
   IFluidTokenInfo,
   IFluidContainerInfo,
   ISetFluidContainerIdRequestBody,
-  INptTimeInfo,
+  INtpTimeInfo,
   IUserRolesInfo,
   IUserRolesMessageBody,
   IRegisterClientIdInfo,
@@ -85,14 +85,14 @@ export class FluidDetails implements IFluidDetails {
     }
   }
 
-  public async getNptTime(): Promise<INptTimeInfo> {
+  public async getNtpTime(): Promise<INtpTimeInfo> {
     try {
       // Initialize if needed
       await CodeboxLiveMessaging.initializeIfNeeded();
       // Request token
       const response =
-        await CodeboxLiveMessaging.parentMessenger!.sendRequest<INptTimeInfo>(
-          FluidDetailsMessageTypes.GET_NPT_TIME
+        await CodeboxLiveMessaging.parentMessenger!.sendRequest<INtpTimeInfo>(
+          FluidDetailsMessageTypes.GET_NTP_TIME
         );
       return response;
     } catch (error) {

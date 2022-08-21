@@ -3,7 +3,7 @@ export interface IFluidDetails {
   getFluidToken(containerId?: string): Promise<IFluidTokenInfo>;
   getFluidContainerId(): Promise<IFluidContainerInfo>;
   setFluidContainerId(containerId: string): Promise<IFluidContainerInfo>;
-  getNptTime(): Promise<INptTimeInfo>;
+  getNtpTime(): Promise<INtpTimeInfo>;
   registerClientId(clientId: string): Promise<IRegisterClientIdInfo>;
   getUserRoles(clientId: string): Promise<IUserRolesInfo>;
 }
@@ -45,7 +45,7 @@ export interface ISetFluidContainerIdRequestBody {
 /**
  * Response for get NPT time
  */
-export interface INptTimeInfo {
+export interface INtpTimeInfo {
   ntpTime: string;
   ntpTimeInUTC: number;
 }

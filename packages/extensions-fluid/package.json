@@ -1,5 +1,5 @@
 {
-  "name": "@codeboxlive/extensions-core",
+  "name": "@codeboxlive/extensions-fluid",
   "version": "0.1.0",
   "main": "./bin/index.js",
   "types": "./bin/index.d.ts",
@@ -9,10 +9,14 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@codeboxlive/window-messaging": "~0.1.0"
+    "@codeboxlive/extensions-core": "~0.1.0",
+    "@fluidframework/azure-client": "~1.0.2",
+    "@microsoft/live-share": "~0.4.0",
+    "fluid-framework": "~1.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
+    "@fluidframework/test-client-utils": "~1.2.3",
     "@types/node": "^10.12.24",
     "babel-loader": "^7.1.5",
     "typescript": "^4.6.4"
