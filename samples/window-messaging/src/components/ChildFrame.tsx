@@ -1,13 +1,15 @@
 import {
+  MessageHandler,
   WindowMessagingHub,
   WindowMessenger,
 } from "@codeboxlive/window-messaging";
 import { useEffect, useRef, useState } from "react";
-import { ITestResponse } from "../interfaces";
+import { ITestMessageBody, ITestResponse } from "../interfaces";
 
 function ChildFrame() {
   const [windowMessenger, setWindowMessenger] = useState<WindowMessenger>();
   const [number, setNumber] = useState(0);
+  const [randomNumber, setRandomNumber] = useState<number>();
   const [error, setError] = useState<Error>();
   const initializedRef = useRef(false);
 
@@ -16,10 +18,17 @@ function ChildFrame() {
     initializedRef.current = true;
     const setupHub = async () => {
       // Set up hub
-      WindowMessagingHub.initialize([window.location.origin]);
-      const parentMessenger = await WindowMessagingHub.registerWindowMessenger(
-        parent
+      const messageHandlers: Map<string, MessageHandler<any>> = new Map();
+      const testMessageHandler: MessageHandler<ITestMessageBody> = (evt) => {
+        setRandomNumber(evt.randomNumber);
+      };
+      messageHandlers.set("test-message", testMessageHandler);
+      const hub = new WindowMessagingHub(
+        [window.location.origin],
+        undefined,
+        messageHandlers
       );
+      const parentMessenger = await hub.registerWindowMessenger(parent);
       setWindowMessenger(parentMessenger);
     };
     setupHub();
@@ -32,8 +41,9 @@ function ChildFrame() {
         <>
           <button
             onClick={() => {
+              // Send a request to parent to change the number
               windowMessenger
-                .sendRequest<ITestResponse>("test", {
+                .sendRequest<ITestResponse>("test-request", {
                   value: number,
                 })
                 .then((response) => {
@@ -56,14 +66,18 @@ function ChildFrame() {
           <div style={{ color: "red", marginTop: "24px" }}>{error.message}</div>
           <button
             onClick={() => {
+              // Reset number and error
               setNumber(0);
               setError(undefined);
             }}
           >
-            Reset number
+            {"Reset number"}
           </button>
         </>
       )}
+      <div style={{ marginTop: "12px" }}>
+        {`Last random number from parent: ${randomNumber ?? "N/A"}`}
+      </div>
     </>
   );
 }

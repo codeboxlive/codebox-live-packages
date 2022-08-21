@@ -1,13 +1,15 @@
 import {
   WindowMessagingHub,
   RequestHandler,
+  WindowMessenger,
 } from "@codeboxlive/window-messaging";
-import { useEffect, useRef } from "react";
-import { ITestMessageBody, ITestResponse } from "../interfaces";
+import { useEffect, useRef, useState } from "react";
+import { ITestRequestBody, ITestResponse } from "../interfaces";
 
 function ParentFrame() {
   const initializedRef = useRef(false);
   const iFrameRef = useRef<HTMLIFrameElement | null>(null);
+  const [childMessenger, setChildMessenger] = useState<WindowMessenger>();
 
   useEffect(() => {
     if (initializedRef.current || !iFrameRef.current) return;
@@ -15,9 +17,9 @@ function ParentFrame() {
     // Set up hub
     const requestHandlers = new Map<string, RequestHandler<any, any>>();
     const testRequestHandler: RequestHandler<
-      ITestMessageBody,
+      ITestRequestBody,
       ITestResponse
-    > = (data: ITestMessageBody): Promise<ITestResponse> => {
+    > = (data: ITestRequestBody): Promise<ITestResponse> => {
       return new Promise<ITestResponse>((resolve, reject) => {
         if (data.value < 10) {
           resolve({
@@ -28,12 +30,32 @@ function ParentFrame() {
         }
       });
     };
-    requestHandlers.set("test", testRequestHandler);
-    WindowMessagingHub.initialize([window.location.origin], requestHandlers);
+    requestHandlers.set("test-request", testRequestHandler);
+    const hub = new WindowMessagingHub(
+      [window.location.origin],
+      requestHandlers
+    );
+    hub.addEventListener("registerWindowMessenger", (evt) => {
+      console.log(evt);
+      setChildMessenger(evt.windowMessenger);
+    });
   });
 
   return (
     <>
+      <div style={{ marginBottom: "12px" }}>
+        <button
+          disabled={!childMessenger}
+          onClick={() => {
+            // Send a one-way message to child
+            childMessenger?.sendMessage("test-message", {
+              randomNumber: Math.round(Math.random() * 100),
+            });
+          }}
+        >
+          {"Send random number to child"}
+        </button>
+      </div>
       <iframe
         ref={iFrameRef}
         width={720}

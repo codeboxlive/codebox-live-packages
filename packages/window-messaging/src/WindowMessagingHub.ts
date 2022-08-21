@@ -8,22 +8,30 @@ import {
 import { IWindowMessageResponse } from "./interfaces";
 import { MessageHandler, RequestHandler } from "./types";
 import { v4 as uuid } from "uuid";
+import EventEmitter from "events";
 
-export class WindowMessagingHub {
-  private static localWindowId = uuid();
-  private static isInitialized = false;
-  private static allowedMessageOrigins: string[] = [];
-  private static requestHandlers = new Map<
+export interface IRegisterWindowMessengerEvent {
+  windowMessenger: WindowMessenger;
+}
+
+export interface MediaPlayerSynchronizerEvents {
+  registerWindowMessenger: IRegisterWindowMessengerEvent;
+}
+
+export class WindowMessagingHub extends EventEmitter {
+  private localWindowId = uuid();
+  private allowedMessageOrigins: string[] = [];
+  private requestHandlers = new Map<
     string,
     RequestHandler<object | undefined, object | null>
   >();
-  private static messageHandlers = new Map<
+  private messageHandlers = new Map<
     string,
     MessageHandler<object | undefined>
   >();
-  private static registeredWindows = new Map<string, WindowMessenger>();
+  private registeredWindows = new Map<string, WindowMessenger>();
 
-  public static initialize(
+  constructor(
     allowedMessageOrigins: string[],
     requestHandlers?: Map<
       string,
@@ -31,45 +39,79 @@ export class WindowMessagingHub {
     >,
     messageHandlers?: Map<string, MessageHandler<object | undefined>>
   ) {
-    if (this.isInitialized) return;
+    super();
+    this.allowedMessageOrigins = allowedMessageOrigins;
     if (requestHandlers) {
       this.requestHandlers = requestHandlers;
     }
     if (messageHandlers) {
       this.messageHandlers = messageHandlers;
     }
-    this.allowedMessageOrigins = allowedMessageOrigins;
+
     this.listenForIncomingMessages();
-    this.isInitialized = true;
   }
 
-  public static registerWindowMessenger(
+  /**
+   * MARK: public methods
+   */
+
+  public registerWindowMessenger(
     otherWindow: Window,
     knownWindowId?: string
   ): Promise<WindowMessenger> {
     const windowId = knownWindowId ?? uuid();
-    const windowMessager = new WindowMessenger(
+    const windowMessenger = new WindowMessenger(
       windowId,
       this.localWindowId,
       otherWindow
     );
-    this.registeredWindows.set(windowId, windowMessager);
+    this.registeredWindows.set(windowId, windowMessenger);
+    this.emit("registerWindowMessenger", {
+      windowMessenger,
+    });
     // TODO: wait until child window has sent first message before returning
-    return Promise.resolve(windowMessager);
+    return Promise.resolve(windowMessenger);
   }
 
-  public static unregisterWindowMessenger(id: string) {
+  public unregisterWindowMessenger(id: string) {
     this.registeredWindows.delete(id);
   }
 
-  private static listenForIncomingMessages() {
-    if (this.isInitialized) return;
+  /**
+   * Registers new event listener.
+   * @param event Name the event to add.
+   * @param listener Function to call when this event is triggered.
+   */
+  public addEventListener<
+    K extends keyof MediaPlayerSynchronizerEvents = keyof MediaPlayerSynchronizerEvents
+  >(event: K, listener: (evt: MediaPlayerSynchronizerEvents[K]) => void): this {
+    this.on(event, listener);
+    return this;
+  }
+
+  /**
+   * Un-registers existing event listener.
+   * @param event Name of event to remove.
+   * @param listener Function previously registered using `addEventListener`.
+   */
+  public removeEventListener<
+    K extends keyof MediaPlayerSynchronizerEvents = keyof MediaPlayerSynchronizerEvents
+  >(event: K, listener: (evt: MediaPlayerSynchronizerEvents[K]) => void): this {
+    this.off(event, listener);
+    return this;
+  }
+
+  /**
+   * MARK: private methods
+   */
+
+  private listenForIncomingMessages() {
     window.addEventListener("message", this.onIncomingMessage.bind(this));
   }
 
-  private static async onIncomingMessage(ev: MessageEvent<any>) {
+  private async onIncomingMessage(ev: MessageEvent<any>) {
     // if (ev.origin === window.origin) return;
-    if (!WindowMessagingHub.allowedMessageOrigins.includes(ev.origin)) {
+    if (!this.allowedMessageOrigins.includes(ev.origin)) {
       console.warn(
         new Error(
           `WindowMessagingHub: received message from untrusted origin of ${ev.origin}`
