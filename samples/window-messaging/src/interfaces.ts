@@ -1,3 +1,5 @@
+import { RequestHandlers } from "@codeboxlive/window-messaging";
+
 export interface ITestRequestBody {
   value: number;
 }
@@ -8,4 +10,10 @@ export interface ITestResponse {
 
 export interface ITestMessageBody {
   randomNumber: number;
+}
+
+// Interface of the HubArea requests
+export interface ITestHubAreaRequests extends RequestHandlers {
+  getTransformedValue(data: ITestRequestBody): Promise<ITestResponse>;
+  sendRandomValue(data: ITestMessageBody): Promise<void>;
 }

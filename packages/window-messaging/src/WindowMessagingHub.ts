@@ -1,15 +1,14 @@
 import { WindowMessenger } from "./WindowMessenger";
 import {
   isWindow,
-  isWindowMessage,
   isWindowMessageResponse,
   isWindowRequest,
-  SystemMessageTypes,
+  SystemHubArea,
 } from "./internals";
-import { IWindowMessageResponse } from "./interfaces";
-import { MessageHandler, RequestHandler } from "./types";
+import { IWindowMessageResponse, RequestHandlers } from "./interfaces";
 import { v4 as uuid } from "uuid";
 import EventEmitter from "events";
+import { HubArea } from "./HubArea";
 
 export interface IRegisterWindowMessengerEvent {
   windowMessenger: WindowMessenger;
@@ -23,43 +22,42 @@ export class WindowMessagingHub extends EventEmitter {
   private readonly hubKey: string;
   private readonly localWindowId = uuid();
   private allowedMessageOrigins: string[] = [];
-  private requestHandlers = new Map<
-    string,
-    RequestHandler<object | undefined, object | null>
-  >();
-  private messageHandlers = new Map<
-    string,
-    MessageHandler<object | undefined>
-  >();
   private registeredWindows = new Map<string, WindowMessenger>();
+  private systemHubArea = new SystemHubArea();
+  private hubAreas: HubArea[];
 
   constructor(
     hubKey: string,
     allowedMessageOrigins: string[],
-    requestHandlers?: Map<
-      string,
-      RequestHandler<object | undefined, object | null>
-    >,
-    messageHandlers?: Map<string, MessageHandler<object | undefined>>
+    additionalHubs: HubArea[] = []
   ) {
     super();
     this.hubKey = hubKey;
+    this.hubAreas = [this.systemHubArea, ...additionalHubs];
     this.allowedMessageOrigins = allowedMessageOrigins;
-    if (requestHandlers) {
-      this.requestHandlers = requestHandlers;
-    }
-    if (messageHandlers) {
-      this.messageHandlers = messageHandlers;
-    }
-
     window.addEventListener("message", this.onIncomingMessage.bind(this));
+  }
+
+  /**
+   * MARK: public getters
+   */
+
+  private get requestHandlers(): RequestHandlers {
+    let mergedRequestHandlers: RequestHandlers = {};
+    this.hubAreas.forEach((areaHub) => {
+      mergedRequestHandlers = {
+        ...mergedRequestHandlers,
+        ...areaHub.requestHandlers,
+      };
+    });
+    return mergedRequestHandlers;
   }
 
   /**
    * MARK: public methods
    */
 
-  public registerWindowMessenger(
+  public async registerWindowMessenger(
     otherWindow: Window,
     knownWindowId?: string
   ): Promise<WindowMessenger> {
@@ -75,8 +73,8 @@ export class WindowMessagingHub extends EventEmitter {
       windowMessenger,
     });
     // Send confirmation so that other window knows that the registration occurred
-    windowMessenger.sendMessage(SystemMessageTypes.INITIALIZE);
-    return Promise.resolve(windowMessenger);
+    await this.systemHubArea.sendRequestWith(windowMessenger).initialize();
+    return windowMessenger;
   }
 
   public unregisterWindowMessenger(id: string) {
@@ -126,7 +124,7 @@ export class WindowMessagingHub extends EventEmitter {
     if (isWindow(source)) {
       try {
         const decoded = JSON.parse(data);
-        if (isWindowMessage(decoded)) {
+        if (isWindowRequest(decoded)) {
           // If message is from a different hub, ignore the message
           if (decoded.hubKey !== this.hubKey) return;
           // Check if window already has a registered messenger
@@ -138,18 +136,14 @@ export class WindowMessagingHub extends EventEmitter {
               decoded.windowId
             );
           }
-          // If initial system message
-          if (decoded.messageType === SystemMessageTypes.INITIALIZE) return;
           // Handle non-system message/request
           if (isWindowMessageResponse(decoded)) {
             // The message is an incoming request to resolve a pending request
             windowMessenger.onReceivedWindowMessage(decoded);
-          } else if (isWindowRequest(decoded)) {
+          } else {
             // The message sender is expecting a response
-            let responseMessage: IWindowMessageResponse<object | null>;
-            const requestHandler = this.requestHandlers.get(
-              decoded.messageType
-            );
+            let responseMessage: IWindowMessageResponse<object | void>;
+            const requestHandler = this.requestHandlers[decoded.messageType];
             if (requestHandler) {
               try {
                 // Handle the request
@@ -159,13 +153,13 @@ export class WindowMessagingHub extends EventEmitter {
                 responseMessage = {
                   messageType: decoded.messageType,
                   messageId: decoded.messageId,
-                  response: requestResponseData ?? null,
+                  response: requestResponseData ?? undefined,
                 };
               } catch (err: any) {
                 responseMessage = {
                   messageType: decoded.messageType,
                   messageId: decoded.messageId,
-                  response: null,
+                  response: undefined,
                   errorMessage: err.message ?? "An unknown error occurred",
                 };
               }
@@ -174,25 +168,11 @@ export class WindowMessagingHub extends EventEmitter {
               responseMessage = {
                 messageType: decoded.messageType,
                 messageId: decoded.messageId,
-                response: null,
+                response: undefined,
                 errorMessage: "Unable to find a response",
               };
             }
             windowMessenger.sendRequestResponse(responseMessage);
-          } else {
-            // The message sender is not expecting a response, process message
-            const messageHandler = this.messageHandlers.get(
-              decoded.messageType
-            );
-            if (messageHandler) {
-              messageHandler(decoded.messageBody);
-            } else {
-              console.error(
-                new Error(
-                  `WindowMessagingHub: no message handler registered of type ${data.messageType}`
-                )
-              );
-            }
           }
         }
       } catch (err: any) {

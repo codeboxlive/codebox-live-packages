@@ -1,16 +1,11 @@
 import { CodeboxLiveMessaging } from "./window-messaging";
-import { IFluidDetails } from "./fluid";
-import { FluidDetails } from "./fluid/internals";
+import { IFluidRequests } from "@codeboxlive/hub-interfaces";
+import { FLUID_HUB_AREAS } from "./constants";
 
 export class CodeboxLiveClient {
   /**
    * MARK: Static variables
    */
-
-  /**
-   * Fluid details for use by extensions-fluid package
-   */
-  private static readonly _fluidDetails: IFluidDetails = new FluidDetails();
 
   /**
    * MARK: static getters and setters
@@ -26,13 +21,20 @@ export class CodeboxLiveClient {
   /**
    * APIs related to Fluid. Used by `@codeboxlive/extensions-fluid` package
    */
-  public static get fluid(): IFluidDetails {
-    return this._fluidDetails;
+  public static get fluid(): IFluidRequests {
+    return FLUID_HUB_AREAS.getRequestsToParent();
   }
 
   /**
    * MARK: static public methods
    */
+
+  /**
+   * Initialize the CodeboxLiveClient for use with parent hub
+   */
+  public async initialize(): Promise<void> {
+    return CodeboxLiveMessaging.initializeIfNeeded();
+  }
 
   /**
    * MARK: static private methods

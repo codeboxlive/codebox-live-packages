@@ -1,12 +1,19 @@
-export interface IFluidDetails {
+import { type RequestHandlers } from "@codeboxlive/window-messaging";
+/**
+ * Fluid details interface
+ */
+export interface IFluidRequests extends RequestHandlers {
   getTenantInfo(): Promise<IFluidTenantInfo>;
-  getFluidToken(containerId?: string): Promise<IFluidTokenInfo>;
+  getFluidToken(body: IFluidTokenRequestBody): Promise<IFluidTokenInfo>;
   getFluidContainerId(): Promise<IFluidContainerInfo>;
-  setFluidContainerId(containerId: string): Promise<IFluidContainerInfo>;
+  setFluidContainerId(
+    body: ISetFluidContainerIdRequestBody
+  ): Promise<IFluidContainerInfo>;
   getNtpTime(): Promise<INtpTimeInfo>;
-  registerClientId(clientId: string): Promise<IRegisterClientIdInfo>;
-  getUserRoles(clientId: string): Promise<IUserRolesInfo>;
+  registerClientId(body: IUserRolesMessageBody): Promise<IRegisterClientIdInfo>;
+  getUserRoles(body: IUserRolesMessageBody): Promise<IUserRolesInfo>;
 }
+
 /**
  * Response for Fluid token
  */
@@ -37,7 +44,6 @@ export interface IFluidContainerInfo {
 }
 /**
  * Set container ID request body
- * @hidden
  */
 export interface ISetFluidContainerIdRequestBody {
   containerId: string;
@@ -81,7 +87,6 @@ export interface IUserRolesInfo {
 }
 /**
  * Message body for registering clientId or getting user roles
- * @hidden
  */
 export interface IUserRolesMessageBody {
   clientId: string;

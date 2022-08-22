@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { IWindowMessageResponse } from "./interfaces";
-import { IWindowMessage, IWindowRequest } from "./internals/interfaces";
+import { IWindowMessageResponse, IWindowRequest } from "./interfaces";
 
 export class MessageRequestCallbacks<T> {
   public readonly resolveCallback: (arg0: T) => void;
@@ -46,35 +45,26 @@ export class WindowMessenger {
   }
 
   /**
-   * SECTION: private methods
-   */
-
-  private sendMessageToWindow(
-    message:
-      | IWindowMessage<object | undefined>
-      | IWindowRequest<object | undefined>
-  ) {
-    return new Promise<void>((resolve, reject) => {
-      if (this.otherWindow === window) {
-        reject(
-          new Error("Cannot send message between two windows that are the same")
-        );
-      }
-      this.otherWindow.postMessage(JSON.stringify(message), "*");
-      resolve();
-    });
-  }
-
-  /**
    * SECTION: public methods
    */
 
-  public sendRequest<X>(messageType: string, messageBody?: object): Promise<X> {
+  /**
+   * Send request to frame
+   * @template TResponse response type, either an object or void
+   *
+   * @param messageType string type for message so frame can determine how to handle.
+   * @param messageBody Optional. Object to send to parent with information about request.
+   * @returns promise with expected object response
+   */
+  public sendRequest<TResponse extends object | void>(
+    messageType: string,
+    messageBody?: object
+  ): Promise<TResponse> {
     return new Promise((resolve, reject) => {
       const messageId = uuid();
       this.pendingRequests.set(
         messageId,
-        new MessageRequestCallbacks<X>(resolve, reject)
+        new MessageRequestCallbacks<TResponse>(resolve, reject)
       );
       this.sendMessageToWindow({
         hubKey: this.hubKey,
@@ -88,25 +78,27 @@ export class WindowMessenger {
     });
   }
 
-  public sendMessage(messageType: string, messageBody?: object) {
-    this.sendMessageToWindow({
-      hubKey: this.hubKey,
-      windowId: this.id,
-      messageType,
-      messageBody,
-    });
-  }
-
-  public sendRequestResponse(response: IWindowMessageResponse<object | null>) {
+  /**
+   * Send response to request back to frame that made request
+   *
+   * @param response response information.
+   */
+  public sendRequestResponse(response: IWindowMessageResponse<object | void>) {
     this.sendMessageToWindow({
       hubKey: this.hubKey,
       windowId: this._id,
       ...response,
+      isResponse: true,
     });
   }
 
+  /**
+   * Response received from frame for a pending request
+   *
+   * @param response response information.
+   */
   public onReceivedWindowMessage(
-    response: IWindowMessageResponse<object | null>
+    response: IWindowMessageResponse<object | void>
   ) {
     const pendingRequest = this.pendingRequests.get(response.messageId);
     if (pendingRequest) {
@@ -128,5 +120,21 @@ export class WindowMessenger {
       }
       this.pendingRequests.delete(response.messageId);
     }
+  }
+
+  /**
+   * SECTION: private methods
+   */
+
+  private sendMessageToWindow(message: IWindowRequest<object | undefined>) {
+    return new Promise<void>((resolve, reject) => {
+      if (this.otherWindow === window) {
+        reject(
+          new Error("Cannot send message between two windows that are the same")
+        );
+      }
+      this.otherWindow.postMessage(JSON.stringify(message), "*");
+      resolve();
+    });
   }
 }

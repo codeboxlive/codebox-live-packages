@@ -1,10 +1,10 @@
+import { CODEBOX_HUB_KEY } from "@codeboxlive/hub-interfaces";
 import {
   WindowMessagingHub,
   WindowMessenger,
 } from "@codeboxlive/window-messaging";
-import { UNKNOWN_ERROR } from "../constants";
+import { ALL_HUB_AREAS, UNKNOWN_ERROR } from "../constants";
 
-export const CODEBOX_HUB_KEY: string = "CODEBOX-LIVE-CLIENT";
 const AUTHORIZED_ORIGINS: string[] = [
   "https://live-share-sandbox.vercel.app",
   "http://localhost:3000",
@@ -16,7 +16,7 @@ export class CodeboxLiveMessaging {
    */
 
   private static readonly messagingHub: WindowMessagingHub =
-    new WindowMessagingHub(CODEBOX_HUB_KEY, AUTHORIZED_ORIGINS);
+    new WindowMessagingHub(CODEBOX_HUB_KEY, AUTHORIZED_ORIGINS, ALL_HUB_AREAS);
   private static _parentMessenger?: WindowMessenger;
 
   /**
