@@ -1,0 +1,23 @@
+{
+  "name": "@codeboxlive/projects-core",
+  "version": "0.1.0",
+  "main": "./bin/index.js",
+  "types": "./bin/index.d.ts",
+  "scripts": {
+    "clean": "npx shx rm -rf bin",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@codeboxlive/window-messaging": "~0.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@types/node": "^10.12.24",
+    "babel-loader": "^7.1.5",
+    "typescript": "^4.6.4"
+  },
+  "peerDependencies": {
+    "@codeboxlive/hub-interfaces": "~0.1.0"
+  }
+}
