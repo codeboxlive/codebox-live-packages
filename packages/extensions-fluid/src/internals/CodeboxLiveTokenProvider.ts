@@ -40,7 +40,9 @@ export class CodeboxLiveTokenProvider implements ITokenProvider {
         this._cachedDocumentId !== documentId,
       ].includes(true)
     ) {
-      const tokenInfo = await CodeboxLiveClient.fluid.getFluidToken(documentId);
+      const tokenInfo = await CodeboxLiveClient.fluid.getFluidToken({
+        containerId: documentId,
+      });
       this._cachedToken = tokenInfo.token;
       fromCache = false;
     } else {

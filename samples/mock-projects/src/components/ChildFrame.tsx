@@ -4,7 +4,9 @@ import { CodeboxLiveClient } from "@codeboxlive/extensions-core";
 // View for ChildFrame
 function ChildFrame() {
   const [loading, setLoading] = useState<boolean>(true);
-  const [lastResponse, setLastResponse] = useState<string>(" ");
+  const [lastResponse, setLastResponse] = useState<string>(
+    "Waiting for first response..."
+  );
   const [error, setError] = useState<Error>();
   const initializedRef = useRef(false);
 
@@ -14,15 +16,12 @@ function ChildFrame() {
     const setupHub = async () => {
       // Set up hub
       try {
-        console.log("initializing child");
         await CodeboxLiveClient.initialize();
       } catch (err: any) {
-        console.error(err);
         if (err instanceof Error) {
           setError(err);
         }
       } finally {
-        console.log("done");
         setLoading(false);
       }
     };

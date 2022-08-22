@@ -271,9 +271,9 @@ export class CodeboxLiveFluidClient {
     const newContainerId = await container.attach();
 
     // Attempt to save container ID mapping
-    const containerInfo = await CodeboxLiveClient.fluid.setFluidContainerId(
-      newContainerId
-    );
+    const containerInfo = await CodeboxLiveClient.fluid.setFluidContainerId({
+      containerId: newContainerId,
+    });
     if (containerInfo.containerId !== newContainerId) {
       // Delete created container
       container.dispose();
