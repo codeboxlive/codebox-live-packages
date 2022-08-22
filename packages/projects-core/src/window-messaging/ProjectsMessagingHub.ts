@@ -10,6 +10,7 @@ const AUTHORIZED_ORIGINS: string[] = [
   "https://live-share-sandbox.vercel.app",
   "https://1-2-2-sandpack.codesandbox.io",
   "http://localhost:3000",
+  "http://127.0.0.1:5173",
 ];
 
 export class ProjectsMessagingHub {

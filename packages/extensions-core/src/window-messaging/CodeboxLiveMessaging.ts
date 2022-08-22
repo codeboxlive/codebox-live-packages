@@ -8,6 +8,7 @@ import { ALL_HUB_AREAS, UNKNOWN_ERROR } from "../constants";
 const AUTHORIZED_ORIGINS: string[] = [
   "https://live-share-sandbox.vercel.app",
   "http://localhost:3000",
+  "http://127.0.0.1:5173",
 ];
 
 export class CodeboxLiveMessaging {
@@ -15,8 +16,7 @@ export class CodeboxLiveMessaging {
    * MARK: Static variables
    */
 
-  private static readonly messagingHub: WindowMessagingHub =
-    new WindowMessagingHub(CODEBOX_HUB_KEY, AUTHORIZED_ORIGINS, ALL_HUB_AREAS);
+  private static messagingHub?: WindowMessagingHub;
   private static _parentMessenger?: WindowMessenger;
 
   /**
@@ -46,6 +46,11 @@ export class CodeboxLiveMessaging {
       );
     }
     if (!this.isInitialized) {
+      this.messagingHub = new WindowMessagingHub(
+        CODEBOX_HUB_KEY,
+        AUTHORIZED_ORIGINS,
+        ALL_HUB_AREAS
+      );
       try {
         const messenger = await this.messagingHub.registerWindowMessenger(
           window.parent

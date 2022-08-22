@@ -32,7 +32,7 @@ export class CodeboxLiveClient {
   /**
    * Initialize the CodeboxLiveClient for use with parent hub
    */
-  public async initialize(): Promise<void> {
+  public static async initialize(): Promise<void> {
     return CodeboxLiveMessaging.initializeIfNeeded();
   }
 

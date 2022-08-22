@@ -25,7 +25,9 @@ export class ProjectsHubClient {
   /**
    * Initialize the CodeboxLiveClient for use with parent hub
    */
-  public async initialize(fluidRequestHandlers: IFluidRequests): Promise<void> {
+  public static async initialize(
+    fluidRequestHandlers: IFluidRequests
+  ): Promise<void> {
     const fluidDetails = new FluidRequests(fluidRequestHandlers);
     const hubAreas = [fluidDetails];
     return ProjectsMessagingHub.initializeIfNeeded(hubAreas);
