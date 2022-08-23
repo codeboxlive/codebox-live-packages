@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "./bin/index.js",
   "types": "./bin/index.d.ts",
+  "private": false,
   "scripts": {
     "clean": "npx shx rm -rf bin",
     "build": "tsc -p tsconfig.build.json",
