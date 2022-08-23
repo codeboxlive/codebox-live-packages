@@ -7,6 +7,8 @@ export class UncleGatewayHub {
    * MARK: Static variables
    */
 
+  private static fluid?: FluidRequests;
+
   /**
    * MARK: static getters and setters
    */
@@ -28,8 +30,12 @@ export class UncleGatewayHub {
   public static async initialize(
     fluidRequestHandlers: IFluidRequests
   ): Promise<void> {
-    const fluidDetails = new FluidRequests(fluidRequestHandlers);
-    const hubAreas = [fluidDetails];
+    if (!this.fluid) {
+      this.fluid = new FluidRequests(fluidRequestHandlers);
+    } else {
+      this.fluid.requestHandlers = fluidRequestHandlers;
+    }
+    const hubAreas = [this.fluid!];
     return ProjectsGatewayHub.initializeIfNeeded(hubAreas);
   }
 

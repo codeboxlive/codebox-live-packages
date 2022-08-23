@@ -1,32 +1,43 @@
 import { RequestHandlers } from "./interfaces";
 import { WindowGateway } from "./WindowGateway";
 
+function toMappedHandler<TypedRequestHandlers extends RequestHandlers>(
+  areaPath: string,
+  requestHandlers: TypedRequestHandlers
+) {
+  let mappedRequestHandlers: RequestHandlers = {};
+  Object.keys(requestHandlers).forEach((key) => {
+    const newValueMapped = {
+      [`${areaPath}/${key}`]: requestHandlers[key],
+    };
+    if (mappedRequestHandlers) {
+      mappedRequestHandlers = {
+        ...mappedRequestHandlers,
+        ...newValueMapped,
+      };
+    } else {
+      mappedRequestHandlers = { ...newValueMapped };
+    }
+  });
+  return mappedRequestHandlers as TypedRequestHandlers;
+}
+
 export class HubArea<
   TypedRequestHandlers extends RequestHandlers = RequestHandlers
 > {
   private readonly areaPath: string;
-  private readonly _requestHandlers: TypedRequestHandlers;
+  private _requestHandlers: TypedRequestHandlers;
   constructor(areaPath: string, requestHandlers: TypedRequestHandlers) {
     this.areaPath = areaPath;
-    let mappedRequestHandlers: RequestHandlers = {};
-    Object.keys(requestHandlers).forEach((key) => {
-      const newValueMapped = {
-        [`${this.areaPath}/${key}`]: requestHandlers[key],
-      };
-      if (mappedRequestHandlers) {
-        mappedRequestHandlers = {
-          ...mappedRequestHandlers,
-          ...newValueMapped,
-        };
-      } else {
-        mappedRequestHandlers = { ...newValueMapped };
-      }
-    });
-    this._requestHandlers = mappedRequestHandlers as TypedRequestHandlers;
+    this._requestHandlers = toMappedHandler(this.areaPath, requestHandlers);
   }
 
   public get requestHandlers(): TypedRequestHandlers {
     return this._requestHandlers;
+  }
+
+  public set requestHandlers(value: TypedRequestHandlers) {
+    this._requestHandlers = toMappedHandler(this.areaPath, value);
   }
 
   protected sendRequest<
