@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/hub-interfaces",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Codebox Live gateway hub interfaces.",
   "author": "Ryan Bliss",
   "license": "MIT",
