@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/extensions-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Codebox Live sandbox project core extension.",
   "author": "Ryan Bliss",
   "license": "MIT",
