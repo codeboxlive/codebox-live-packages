@@ -1,6 +1,6 @@
-# Codebox Live Gateway Hub Interfaces
+# Codebox Live gateway hub interfaces
 
-This package is a thin wrapper designed to make window post messages bi-directional using promises. For it to work, both a parent and child window must implement this package.
+Core interfaces used in Codebox Live gateways.
 
 ## Installing the package
 
