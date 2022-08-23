@@ -1,7 +1,7 @@
 {
   "name": "@codeboxlive/extensions-fluid",
   "version": "0.1.5",
-  "description": "Codebox Live sandbox project Fluid extension.",
+  "description": "Codebox Live project Fluid extension, allowing you to use a free Fluid container in a Codebox Live sandbox.",
   "author": "Ryan Bliss",
   "license": "SEE LICENSE IN LICENSE",
   "main": "./bin/index.js",
