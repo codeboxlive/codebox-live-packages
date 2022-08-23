@@ -2,7 +2,7 @@ import { IFluidRequests } from "@codeboxlive/hub-interfaces";
 import { FluidRequests } from "./fluid";
 import { ProjectsGatewayHub } from "./window-gateway";
 
-export class ProjectsHubClient {
+export class UncleGatewayHub {
   /**
    * MARK: Static variables
    */

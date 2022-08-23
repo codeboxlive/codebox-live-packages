@@ -28,5 +28,12 @@
   },
   "bugs": {
     "url": "https://github.com/codeboxlive/codebox-live-packages/issues"
-  }
+  },
+  "keywords": [
+    "window",
+    "post",
+    "message",
+    "iFrame",
+    "window post message"
+  ]
 }

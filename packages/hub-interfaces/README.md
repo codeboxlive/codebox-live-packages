@@ -1,4 +1,4 @@
-# Window Messaging SDK
+# Codebox Live Gateway Hub Interfaces
 
 This package is a thin wrapper designed to make window post messages bi-directional using promises. For it to work, both a parent and child window must implement this package.
 
@@ -7,11 +7,15 @@ This package is a thin wrapper designed to make window post messages bi-directio
 ### npm
 
 ```bash
-npm install @codeboxlive/project-client
+npm install @codeboxlive/hub-interfaces
 ```
 
 ### yarn
 
 ```bash
-yarn add @codeboxlive/project-client
+yarn add @codeboxlive/hub-interfaces
 ```
+
+## License
+
+Licensed under the [MIT](LICENSE) License, except for dependencies which have various licenses.

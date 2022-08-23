@@ -22,14 +22,6 @@ yarn add @codeboxlive/window-gateway
 
 Coming soon
 
-## Samples
-
-| Name                        | URL | Description |
-| --------------------------- | --- | ----------- |
-| Window Gateway React app    |     |             |
-| Codebox Live Parent Gateway |     |             |
-| Codebox Live Child Gateway  |     |             |
-
 ## License
 
 Licensed under the [MIT](LICENSE) License, except for dependencies which have various licenses.

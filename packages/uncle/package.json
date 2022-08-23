@@ -1,7 +1,7 @@
 {
-  "name": "@codeboxlive/projects-core",
+  "name": "@codeboxlive/uncle",
   "version": "0.1.0",
-  "description": "Codebox Live sandbox project core extension.",
+  "description": "Codebox Live gateway of root app, codenamed uncle.",
   "author": "Ryan Bliss",
   "license": "MIT",
   "main": "./bin/index.js",
@@ -24,7 +24,7 @@
     "@codeboxlive/hub-interfaces": "~0.1.0"
   },
   "repository": {
-    "directory": "packages/projects-core",
+    "directory": "packages/uncle",
     "type": "git",
     "url": "https://github.com/codeboxlive/codebox-live-packages.git"
   },

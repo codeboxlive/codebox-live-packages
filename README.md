@@ -16,9 +16,11 @@ Fluid extension package for use in Codebox Live sandbox projects to use Fluid an
 
 Core interfaces used in Codebox Live gateways.
 
-### @codeboxlive/projects-core
+### @codeboxlive/uncle
 
-The Window Gateway Hub implementation for use in the Codebox Live web application.
+Uncle implements the gateway hub for use in the Codebox Live web application.
+
+Uncle is not named after any particular uncle. It's just called uncle.
 
 ### @codeboxlive/window-gateway
 

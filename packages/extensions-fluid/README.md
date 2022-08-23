@@ -1,17 +1,21 @@
-# Window Messaging SDK
+# Codebox Live Projects Fluid Extension
 
-This package is a thin wrapper designed to make window post messages bi-directional using promises. For it to work, both a parent and child window must implement this package.
+Fluid extension package for use in Codebox Live sandbox projects to use Fluid and/or Live Share.
 
 ## Installing the package
 
 ### npm
 
 ```bash
-npm install @codeboxlive/project-client
+npm install @codeboxlive/extensions-fluid
 ```
 
 ### yarn
 
 ```bash
-yarn add @codeboxlive/project-client
+yarn add @codeboxlive/extensions-fluid
 ```
+
+## License
+
+Licensed under [this license](LICENSE).

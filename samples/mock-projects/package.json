@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codeboxlive/projects-core": "~0.1.0",
+    "@codeboxlive/uncle": "~0.1.0",
     "@codeboxlive/hub-interfaces": "~0.1.0",
     "@codeboxlive/extensions-core": "~0.1.0",
     "react": "^18.2.0",

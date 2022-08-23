@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ProjectsHubClient } from "@codeboxlive/projects-core";
+import { UncleGatewayHub } from "@codeboxlive/uncle";
 import {
   IFluidTenantInfo,
   IFluidTokenRequestBody,
@@ -86,7 +86,7 @@ function ParentFrame() {
         });
       },
     };
-    ProjectsHubClient.initialize(fluidRequests);
+    UncleGatewayHub.initialize(fluidRequests);
   });
 
   return (

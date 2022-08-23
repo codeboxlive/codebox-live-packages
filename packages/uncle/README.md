@@ -1,6 +1,6 @@
 # Codebox Live Projects
 
-The Window Gateway Hub implementation for use in the Codebox Live web application.
+Uncle implements the gateway hub for use in the Codebox Live web application.
 
 If you are looking to use the Codebox Live extensions in your sandbox application, see [@codeboxlive/extensions-core](../extensions-core/README.md).
 
@@ -11,11 +11,19 @@ If you want to implement your own `WindowGatewayHub` completely decoupled from C
 ### npm
 
 ```bash
-npm install @codeboxlive/project-client
+npm install @codeboxlive/uncle
 ```
 
 ### yarn
 
 ```bash
-yarn add @codeboxlive/project-client
+yarn add @codeboxlive/uncle
 ```
+
+## Important disclaimer
+
+Uncle is not named after any particular uncle. It's just named uncle.
+
+## License
+
+Licensed under the [MIT](LICENSE) License, except for dependencies which have various licenses.
