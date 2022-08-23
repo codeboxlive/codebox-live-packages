@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/extensions-fluid",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Codebox Live sandbox project Fluid extension.",
   "author": "Ryan Bliss",
   "license": "SEE LICENSE IN LICENSE",
@@ -12,8 +12,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@codeboxlive/extensions-core": "~0.1.0",
-    "@codeboxlive/hub-interfaces": "~0.1.0",
+    "@codeboxlive/extensions-core": "^0.1.1",
+    "@codeboxlive/hub-interfaces": "^0.1.1",
     "@fluidframework/azure-client": "~1.0.2",
     "@microsoft/live-share": "~0.4.0",
     "fluid-framework": "~1.2.3"
