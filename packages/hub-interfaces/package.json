@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/hub-interfaces",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Codebox Live gateway hub interfaces.",
   "author": "Ryan Bliss",
   "license": "MIT",
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
-    "@codeboxlive/window-gateway": "^0.1.2",
+    "@codeboxlive/window-gateway": "^0.1.3",
     "@types/node": "^10.12.24",
     "babel-loader": "^7.1.5",
     "typescript": "^4.6.4"
