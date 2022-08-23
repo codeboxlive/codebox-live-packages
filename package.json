@@ -1,7 +1,7 @@
 {
   "name": "build",
   "version": "0.1.0",
-  "description": "build file for Live Share SDK",
+  "description": "Build file for Codebox Live Packages",
   "main": "index.js",
   "scripts": {
     "install": "npm run hoist",
@@ -13,8 +13,8 @@
     "build:docs": "typedoc",
     "publish": "lerna publish --no-private"
   },
-  "author": "",
-  "license": "Microsoft",
+  "author": "Ryan Bliss",
+  "license": "MIT",
   "dependencies": {
     "lerna": "^4.0.0"
   },
