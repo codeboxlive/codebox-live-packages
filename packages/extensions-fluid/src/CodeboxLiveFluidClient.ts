@@ -165,11 +165,8 @@ export class CodeboxLiveFluidClient {
       });
 
       return result[0];
-    } finally {
-      performance.measure(
-        `CodeboxLiveFluidClient: container joined`,
-        `CodeboxLiveFluidClient: join container`
-      );
+    } catch (err: any) {
+      throw err;
     }
   }
 
