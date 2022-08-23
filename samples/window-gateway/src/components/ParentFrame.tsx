@@ -1,8 +1,8 @@
 import {
-  WindowMessagingHub,
-  WindowMessenger,
+  WindowGatewayHub,
+  WindowGateway,
   HubArea,
-} from "@codeboxlive/window-messaging";
+} from "@codeboxlive/window-gateway";
 import { useEffect, useRef, useState } from "react";
 import { HUB_KEY } from "../constants";
 import {
@@ -35,7 +35,7 @@ export class ParentTestHubArea extends HubArea {
 
   // Declare requestWith handler for initiating a new request to a given iFrame window
   public override sendRequestWith(
-    messenger: WindowMessenger,
+    gateway: WindowGateway,
     bindThis = this
   ): ITestHubAreaRequests {
     return {
@@ -47,7 +47,7 @@ export class ParentTestHubArea extends HubArea {
         );
       },
       sendRandomValue(body: ITestMessageBody): Promise<void> {
-        return bindThis.sendRequest(messenger, this.sendRandomValue, body);
+        return bindThis.sendRequest(gateway, this.sendRandomValue, body);
       },
     };
   }
@@ -58,20 +58,20 @@ function ParentFrame() {
   const initializedRef = useRef(false);
   const iFrameRef = useRef<HTMLIFrameElement | null>(null);
   const hubAreaRef = useRef(new ParentTestHubArea());
-  const [childMessenger, setChildMessenger] = useState<WindowMessenger>();
+  const [childGateway, setChildGateway] = useState<WindowGateway>();
   const [numberMessagesSent, setNumberMessagesSent] = useState<number>(0);
 
   useEffect(() => {
     if (initializedRef.current || !iFrameRef.current) return;
     initializedRef.current = true;
     // Set up hub
-    const hub = new WindowMessagingHub(
+    const hub = new WindowGatewayHub(
       HUB_KEY,
       [window.location.origin],
       [hubAreaRef.current]
     );
-    hub.addEventListener("registerWindowMessenger", (evt) => {
-      setChildMessenger(evt.windowMessenger);
+    hub.addEventListener("onRegisterGateway", (evt) => {
+      setChildGateway(evt.gateway);
     });
   });
 
@@ -79,11 +79,11 @@ function ParentFrame() {
     <>
       <div style={{ marginBottom: "12px" }}>
         <button
-          disabled={!childMessenger}
+          disabled={!childGateway}
           onClick={async () => {
             // Send a one-way message to child
             await hubAreaRef.current
-              .sendRequestWith(childMessenger!)
+              .sendRequestWith(childGateway!)
               .sendRandomValue({
                 randomNumber: Math.round(Math.random() * 100),
               });

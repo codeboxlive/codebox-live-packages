@@ -1,6 +1,6 @@
 import { IFluidRequests } from "@codeboxlive/hub-interfaces";
 import { FluidRequests } from "./fluid";
-import { ProjectsMessagingHub } from "./window-messaging";
+import { ProjectsGatewayHub } from "./window-gateway";
 
 export class ProjectsHubClient {
   /**
@@ -15,7 +15,7 @@ export class ProjectsHubClient {
    * Client is initialized with parent window
    */
   public static get isInitialized(): boolean {
-    return ProjectsMessagingHub.isInitialized;
+    return ProjectsGatewayHub.isInitialized;
   }
 
   /**
@@ -30,7 +30,7 @@ export class ProjectsHubClient {
   ): Promise<void> {
     const fluidDetails = new FluidRequests(fluidRequestHandlers);
     const hubAreas = [fluidDetails];
-    return ProjectsMessagingHub.initializeIfNeeded(hubAreas);
+    return ProjectsGatewayHub.initializeIfNeeded(hubAreas);
   }
 
   /**

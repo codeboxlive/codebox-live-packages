@@ -1,5 +1,5 @@
 import { RequestHandlers } from "./interfaces";
-import { WindowMessenger } from "./WindowMessenger";
+import { WindowGateway } from "./WindowGateway";
 
 export class HubArea<
   TypedRequestHandlers extends RequestHandlers = RequestHandlers
@@ -30,22 +30,22 @@ export class HubArea<
   }
 
   protected sendRequest<
-    MessageBody extends object | undefined,
+    RequestBody extends object | undefined,
     ResponseType extends object | void
   >(
-    messenger: WindowMessenger,
+    gateway: WindowGateway,
     caller: Function,
-    body?: MessageBody
+    body?: RequestBody
   ): Promise<ResponseType> {
     const callerName = caller.name;
-    return messenger.sendRequest<ResponseType>(
+    return gateway.sendRequest<ResponseType>(
       `${this.areaPath}/${callerName}`,
       body
     );
   }
 
   public sendRequestWith(
-    messenger: WindowMessenger,
+    gateway: WindowGateway,
     bindThis: HubArea = this
   ): TypedRequestHandlers {
     throw Error("HubArea: Not implemented exception.");

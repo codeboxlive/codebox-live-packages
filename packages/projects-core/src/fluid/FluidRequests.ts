@@ -1,9 +1,5 @@
-import { ProjectsMessagingHub } from "../window-messaging";
-import {
-  IFluidRequests,
-  FLUID_AREA_PATH,
-} from "@codeboxlive/hub-interfaces";
-import { HubArea, WindowMessenger } from "@codeboxlive/window-messaging";
+import { IFluidRequests, FLUID_AREA_PATH } from "@codeboxlive/hub-interfaces";
+import { HubArea, WindowGateway } from "@codeboxlive/window-gateway";
 import { FLUID_REQUEST_HANDLERS } from "./internal";
 
 export class FluidRequests extends HubArea<IFluidRequests> {
@@ -12,7 +8,7 @@ export class FluidRequests extends HubArea<IFluidRequests> {
   }
 
   public override sendRequestWith(
-    messenger: WindowMessenger,
+    gateway: WindowGateway,
     bindThis = this
   ): IFluidRequests {
     return FLUID_REQUEST_HANDLERS;

@@ -1,4 +1,4 @@
-import { RequestHandlers } from "@codeboxlive/window-messaging";
+import { RequestHandlers } from "@codeboxlive/window-gateway";
 
 export interface ITestRequestBody {
   value: number;

@@ -1,4 +1,4 @@
-import { type RequestHandlers } from "@codeboxlive/window-messaging";
+import { type RequestHandlers } from "@codeboxlive/window-gateway";
 /**
  * Fluid details interface
  */

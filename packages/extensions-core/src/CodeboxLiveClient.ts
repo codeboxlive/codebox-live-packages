@@ -1,4 +1,4 @@
-import { CodeboxLiveMessaging } from "./window-messaging";
+import { CodeboxLiveGateway } from "./window-gateway";
 import { IFluidRequests } from "@codeboxlive/hub-interfaces";
 import { FLUID_HUB_AREAS } from "./constants";
 
@@ -15,7 +15,7 @@ export class CodeboxLiveClient {
    * Client is initialized with parent window
    */
   public static get isInitialized(): boolean {
-    return CodeboxLiveMessaging.isInitialized;
+    return CodeboxLiveGateway.isInitialized;
   }
 
   /**
@@ -30,10 +30,10 @@ export class CodeboxLiveClient {
    */
 
   /**
-   * Initialize the CodeboxLiveClient for use with parent hub
+   * Initialize the CodeboxLiveClient for use with parent gateway
    */
   public static async initialize(): Promise<void> {
-    return CodeboxLiveMessaging.initializeIfNeeded();
+    return CodeboxLiveGateway.initializeIfNeeded();
   }
 
   /**

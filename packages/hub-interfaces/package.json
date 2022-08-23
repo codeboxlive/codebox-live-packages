@@ -1,6 +1,9 @@
 {
   "name": "@codeboxlive/hub-interfaces",
   "version": "0.1.0",
+  "description": "Codebox Live gateway hub interfaces.",
+  "author": "Ryan Bliss",
+  "license": "MIT",
   "main": "./bin/index.js",
   "types": "./bin/index.d.ts",
   "scripts": {
@@ -10,9 +13,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
-    "@codeboxlive/window-messaging": "~0.1.0",
+    "@codeboxlive/window-gateway": "~0.1.0",
     "@types/node": "^10.12.24",
     "babel-loader": "^7.1.5",
     "typescript": "^4.6.4"
+  },
+  "repository": {
+    "directory": "packages/hub-interfaces",
+    "type": "git",
+    "url": "https://github.com/codeboxlive/codebox-live-packages.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codeboxlive/codebox-live-packages/issues"
   }
 }

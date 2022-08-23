@@ -1,26 +1,34 @@
 import { CODEBOX_HUB_KEY } from "@codeboxlive/hub-interfaces";
 import {
   HubArea,
-  IRegisterWindowMessengerEvent,
-  WindowMessagingHub,
-  WindowMessenger,
-} from "@codeboxlive/window-messaging";
+  IRegisterWindowGatewayEvent,
+  WindowGatewayHub,
+  WindowGateway,
+} from "@codeboxlive/window-gateway";
 
+const allSandpackUrls: string[] = [];
+for (let a = 0; a < 10; a++) {
+  for (let b = 0; b < 10; b++) {
+    for (let c = 0; c < 10; c++) {
+      allSandpackUrls.push(`https://${a}-${b}-${c}-sandpack.codesandbox.io`);
+    }
+  }
+}
 const AUTHORIZED_ORIGINS: string[] = [
   "https://live-share-sandbox.vercel.app",
-  "https://1-2-2-sandpack.codesandbox.io",
   "http://localhost:3000",
   "http://127.0.0.1:5173",
+  ...allSandpackUrls,
 ];
 
-export class ProjectsMessagingHub {
+export class ProjectsGatewayHub {
   /**
    * MARK: Static variables
    */
 
-  private static messagingHub?: WindowMessagingHub;
+  private static gatewayHub?: WindowGatewayHub;
   private static _isInitialized = false;
-  private static _windowMessengers = new Map<string, WindowMessenger>();
+  private static _gateways = new Map<string, WindowGateway>();
 
   /**
    * MARK: static getters and setters
@@ -34,8 +42,8 @@ export class ProjectsMessagingHub {
     return this._isInitialized;
   }
 
-  public static get windowMessengers(): WindowMessenger[] {
-    return [...this._windowMessengers.values()];
+  public static get gateways(): WindowGateway[] {
+    return [...this._gateways.values()];
   }
 
   /**
@@ -49,19 +57,17 @@ export class ProjectsMessagingHub {
       );
     }
     if (!this.isInitialized) {
-      this.messagingHub = new WindowMessagingHub(
+      this.gatewayHub = new WindowGatewayHub(
         CODEBOX_HUB_KEY,
         AUTHORIZED_ORIGINS,
         hubAreas
       );
-      const onRegisterWindowMessenger = (
-        evt: IRegisterWindowMessengerEvent
-      ) => {
-        this._windowMessengers.set(evt.windowMessenger.id, evt.windowMessenger);
+      const onRegisterGatewayHandler = (evt: IRegisterWindowGatewayEvent) => {
+        this._gateways.set(evt.gateway.id, evt.gateway);
       };
-      this.messagingHub!.addEventListener(
-        "registerWindowMessenger",
-        onRegisterWindowMessenger.bind(this)
+      this.gatewayHub!.addEventListener(
+        "onRegisterGateway",
+        onRegisterGatewayHandler.bind(this)
       );
     }
     return;

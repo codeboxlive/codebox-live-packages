@@ -1,10 +1,10 @@
-export interface IWindowMessageResponse<T extends object | void> {
+export interface IGatewayResponse<T extends object | void> {
   messageId: string;
   messageType: string;
   response?: T;
   errorMessage?: string;
 }
-export interface IWindowRequest<T extends object | undefined> {
+export interface IGatewayRequest<T extends object | undefined> {
   messageId: string;
   hubKey: string;
   windowId: string;

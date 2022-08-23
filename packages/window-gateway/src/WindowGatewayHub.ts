@@ -1,31 +1,39 @@
-import { WindowMessenger } from "./WindowMessenger";
+import { WindowGateway } from "./WindowGateway";
 import {
   isWindow,
-  isWindowMessageResponse,
+  isWindowGatewayResponse,
   isWindowRequest,
   SystemHubArea,
 } from "./internals";
-import { IWindowMessageResponse, RequestHandlers } from "./interfaces";
+import { IGatewayResponse, RequestHandlers } from "./interfaces";
 import { v4 as uuid } from "uuid";
 import EventEmitter from "events";
 import { HubArea } from "./HubArea";
 
-export interface IRegisterWindowMessengerEvent {
-  windowMessenger: WindowMessenger;
+export interface IRegisterWindowGatewayEvent {
+  gateway: WindowGateway;
 }
 
-export interface MediaPlayerSynchronizerEvents {
-  registerWindowMessenger: IRegisterWindowMessengerEvent;
+export interface IWindowGatewayHubEvents {
+  onRegisterGateway: IRegisterWindowGatewayEvent;
 }
 
-export class WindowMessagingHub extends EventEmitter {
+/**
+ * Central hub overseeing all window gateways
+ */
+export class WindowGatewayHub extends EventEmitter {
   private readonly hubKey: string;
   private readonly localWindowId = uuid();
   private allowedMessageOrigins: string[] = [];
-  private registeredWindows = new Map<string, WindowMessenger>();
+  private registeredGateways = new Map<string, WindowGateway>();
   private systemHubArea = new SystemHubArea();
   private hubAreas: HubArea[];
 
+  /**
+   * @param hubKey unique key for key.
+   * @param allowedMessageOrigins allowed message origins to communicate with
+   * @param additionalHubs list of hub areas.
+   */
   constructor(
     hubKey: string,
     allowedMessageOrigins: string[],
@@ -39,7 +47,7 @@ export class WindowMessagingHub extends EventEmitter {
   }
 
   /**
-   * MARK: public getters
+   * MARK: getters
    */
 
   private get requestHandlers(): RequestHandlers {
@@ -57,28 +65,39 @@ export class WindowMessagingHub extends EventEmitter {
    * MARK: public methods
    */
 
-  public async registerWindowMessenger(
-    otherWindow: Window,
-    knownWindowId?: string
-  ): Promise<WindowMessenger> {
-    const windowId = knownWindowId ?? uuid();
-    const windowMessenger = new WindowMessenger(
+  /**
+   * Register a new gateway to communicate with.
+   * @param window the Window instance to open communication with.
+   * @param knownGatewayId Optional. window gateway UUID if known.
+   * @returns window gateway object.
+   */
+  public async registerGateway(
+    window: Window,
+    knownGatewayId?: string
+  ): Promise<WindowGateway> {
+    const windowId = knownGatewayId ?? uuid();
+    const gateway = new WindowGateway(
       this.hubKey,
       windowId,
       this.localWindowId,
-      otherWindow
+      window
     );
-    this.registeredWindows.set(windowId, windowMessenger);
-    this.emit("registerWindowMessenger", {
-      windowMessenger,
+    this.registeredGateways.set(windowId, gateway);
+    this.emit("onRegisterGateway", {
+      gateway,
     });
     // Send confirmation so that other window knows that the registration occurred
-    await this.systemHubArea.sendRequestWith(windowMessenger).initialize();
-    return windowMessenger;
+    await this.systemHubArea.sendRequestWith(gateway).initialize();
+    return gateway;
   }
 
-  public unregisterWindowMessenger(id: string) {
-    this.registeredWindows.delete(id);
+  /**
+   * Unregister gateway for window communication.
+   * @param id the Window instance to open communication with.
+   */
+  public unregisterGateway(id: string) {
+    // TODO: send message to window that it was unregistered
+    this.registeredGateways.delete(id);
   }
 
   /**
@@ -87,8 +106,8 @@ export class WindowMessagingHub extends EventEmitter {
    * @param listener Function to call when this event is triggered.
    */
   public addEventListener<
-    K extends keyof MediaPlayerSynchronizerEvents = keyof MediaPlayerSynchronizerEvents
-  >(event: K, listener: (evt: MediaPlayerSynchronizerEvents[K]) => void): this {
+    K extends keyof IWindowGatewayHubEvents = keyof IWindowGatewayHubEvents
+  >(event: K, listener: (evt: IWindowGatewayHubEvents[K]) => void): this {
     this.on(event, listener);
     return this;
   }
@@ -99,8 +118,8 @@ export class WindowMessagingHub extends EventEmitter {
    * @param listener Function previously registered using `addEventListener`.
    */
   public removeEventListener<
-    K extends keyof MediaPlayerSynchronizerEvents = keyof MediaPlayerSynchronizerEvents
-  >(event: K, listener: (evt: MediaPlayerSynchronizerEvents[K]) => void): this {
+    K extends keyof IWindowGatewayHubEvents = keyof IWindowGatewayHubEvents
+  >(event: K, listener: (evt: IWindowGatewayHubEvents[K]) => void): this {
     this.off(event, listener);
     return this;
   }
@@ -109,6 +128,9 @@ export class WindowMessagingHub extends EventEmitter {
    * MARK: private methods
    */
 
+  /**
+   * Callback method for processing an incoming message from another window gateway.
+   */
   private async onIncomingMessage(ev: MessageEvent<any>) {
     if (!this.allowedMessageOrigins.includes(ev.origin)) {
       console.warn(
@@ -125,24 +147,21 @@ export class WindowMessagingHub extends EventEmitter {
       try {
         const decoded = JSON.parse(data);
         if (isWindowRequest(decoded)) {
-          // If message is from a different hub, ignore the message
+          // If message is from a different gateway hub, ignore the message
           if (decoded.hubKey !== this.hubKey) return;
-          // Check if window already has a registered messenger
-          let windowMessenger = this.registeredWindows.get(decoded.windowId);
-          if (!windowMessenger) {
+          // Check if window already has a registered gateway
+          let gateway = this.registeredGateways.get(decoded.windowId);
+          if (!gateway) {
             // Register
-            windowMessenger = await this.registerWindowMessenger(
-              source,
-              decoded.windowId
-            );
+            gateway = await this.registerGateway(source, decoded.windowId);
           }
           // Handle non-system message/request
-          if (isWindowMessageResponse(decoded)) {
+          if (isWindowGatewayResponse(decoded)) {
             // The message is an incoming request to resolve a pending request
-            windowMessenger.onReceivedWindowMessage(decoded);
+            gateway.onReceivedWindowMessage(decoded);
           } else {
             // The message sender is expecting a response
-            let responseMessage: IWindowMessageResponse<object | void>;
+            let responseMessage: IGatewayResponse<object | void>;
             const requestHandler = this.requestHandlers[decoded.messageType];
             if (requestHandler) {
               try {
@@ -172,7 +191,7 @@ export class WindowMessagingHub extends EventEmitter {
                 errorMessage: "Unable to find a response",
               };
             }
-            windowMessenger.sendRequestResponse(responseMessage);
+            gateway.sendRequestResponse(responseMessage);
           }
         }
       } catch (err: any) {

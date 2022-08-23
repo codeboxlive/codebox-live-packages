@@ -1,8 +1,5 @@
 import { CODEBOX_HUB_KEY } from "@codeboxlive/hub-interfaces";
-import {
-  WindowMessagingHub,
-  WindowMessenger,
-} from "@codeboxlive/window-messaging";
+import { WindowGatewayHub, WindowGateway } from "@codeboxlive/window-gateway";
 import { ALL_HUB_AREAS, UNKNOWN_ERROR } from "../constants";
 
 const AUTHORIZED_ORIGINS: string[] = [
@@ -11,13 +8,13 @@ const AUTHORIZED_ORIGINS: string[] = [
   "http://127.0.0.1:5173",
 ];
 
-export class CodeboxLiveMessaging {
+export class CodeboxLiveGateway {
   /**
    * MARK: Static variables
    */
 
-  private static messagingHub?: WindowMessagingHub;
-  private static _parentMessenger?: WindowMessenger;
+  private static messagingHub?: WindowGatewayHub;
+  private static _parentGateway?: WindowGateway;
 
   /**
    * MARK: static getters and setters
@@ -28,11 +25,11 @@ export class CodeboxLiveMessaging {
   }
 
   public static get isInitialized(): boolean {
-    return !!this._parentMessenger;
+    return !!this._parentGateway;
   }
 
-  public static get parentMessenger(): WindowMessenger | undefined {
-    return this._parentMessenger;
+  public static get parentGateway(): WindowGateway | undefined {
+    return this._parentGateway;
   }
 
   /**
@@ -46,16 +43,14 @@ export class CodeboxLiveMessaging {
       );
     }
     if (!this.isInitialized) {
-      this.messagingHub = new WindowMessagingHub(
+      this.messagingHub = new WindowGatewayHub(
         CODEBOX_HUB_KEY,
         AUTHORIZED_ORIGINS,
         ALL_HUB_AREAS
       );
       try {
-        const messenger = await this.messagingHub.registerWindowMessenger(
-          window.parent
-        );
-        this._parentMessenger = messenger;
+        const gateway = await this.messagingHub.registerGateway(window.parent);
+        this._parentGateway = gateway;
       } catch (error: any) {
         throw error instanceof Error ? error : UNKNOWN_ERROR;
       }

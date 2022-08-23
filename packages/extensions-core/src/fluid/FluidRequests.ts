@@ -1,4 +1,4 @@
-import { CodeboxLiveMessaging } from "../window-messaging";
+import { CodeboxLiveGateway } from "../window-gateway";
 import {
   IFluidTenantInfo,
   IFluidTokenRequestBody,
@@ -12,7 +12,7 @@ import {
   IFluidRequests,
   FLUID_AREA_PATH,
 } from "@codeboxlive/hub-interfaces";
-import { HubArea, WindowMessenger } from "@codeboxlive/window-messaging";
+import { HubArea, WindowGateway } from "@codeboxlive/window-gateway";
 import { FLUID_REQUEST_HANDLERS, NOT_INITIALIZED_HANDLER } from "./internal";
 
 export class FluidRequests extends HubArea<IFluidRequests> {
@@ -21,44 +21,44 @@ export class FluidRequests extends HubArea<IFluidRequests> {
   }
 
   public override sendRequestWith(
-    messenger: WindowMessenger,
+    gateway: WindowGateway,
     bindThis = this
   ): IFluidRequests {
     return {
       async getTenantInfo(): Promise<IFluidTenantInfo> {
-        return bindThis.sendRequest(messenger, this.getTenantInfo);
+        return bindThis.sendRequest(gateway, this.getTenantInfo);
       },
       async getFluidToken(
         body: IFluidTokenRequestBody
       ): Promise<IFluidTokenInfo> {
-        return bindThis.sendRequest(messenger, this.getFluidToken, body);
+        return bindThis.sendRequest(gateway, this.getFluidToken, body);
       },
       async getFluidContainerId(): Promise<IFluidContainerInfo> {
-        return bindThis.sendRequest(messenger, this.getFluidContainerId);
+        return bindThis.sendRequest(gateway, this.getFluidContainerId);
       },
       async setFluidContainerId(
         body: ISetFluidContainerIdRequestBody
       ): Promise<IFluidContainerInfo> {
-        return bindThis.sendRequest(messenger, this.setFluidContainerId, body);
+        return bindThis.sendRequest(gateway, this.setFluidContainerId, body);
       },
       async getNtpTime(): Promise<INtpTimeInfo> {
-        return bindThis.sendRequest(messenger, this.getNtpTime);
+        return bindThis.sendRequest(gateway, this.getNtpTime);
       },
       async registerClientId(
         body: IUserRolesMessageBody
       ): Promise<IRegisterClientIdInfo> {
-        return bindThis.sendRequest(messenger, this.registerClientId, body);
+        return bindThis.sendRequest(gateway, this.registerClientId, body);
       },
       async getUserRoles(body: IUserRolesMessageBody): Promise<IUserRolesInfo> {
-        return bindThis.sendRequest(messenger, this.getUserRoles, body);
+        return bindThis.sendRequest(gateway, this.getUserRoles, body);
       },
     };
   }
 
   public getRequestsToParent(): IFluidRequests {
-    if (!CodeboxLiveMessaging.isInitialized) {
+    if (!CodeboxLiveGateway.isInitialized) {
       return NOT_INITIALIZED_HANDLER;
     }
-    return this.sendRequestWith(CodeboxLiveMessaging.parentMessenger!);
+    return this.sendRequestWith(CodeboxLiveGateway.parentGateway!);
   }
 }

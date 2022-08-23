@@ -1,6 +1,9 @@
 {
   "name": "@codeboxlive/projects-core",
   "version": "0.1.0",
+  "description": "Codebox Live sandbox project core extension.",
+  "author": "Ryan Bliss",
+  "license": "MIT",
   "main": "./bin/index.js",
   "types": "./bin/index.d.ts",
   "scripts": {
@@ -9,7 +12,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@codeboxlive/window-messaging": "~0.1.0"
+    "@codeboxlive/window-gateway": "~0.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
@@ -19,5 +22,13 @@
   },
   "peerDependencies": {
     "@codeboxlive/hub-interfaces": "~0.1.0"
+  },
+  "repository": {
+    "directory": "packages/projects-core",
+    "type": "git",
+    "url": "https://github.com/codeboxlive/codebox-live-packages.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codeboxlive/codebox-live-packages/issues"
   }
 }

@@ -1,10 +1,10 @@
-import { IWindowRequest } from "../interfaces";
-import { IWindowMessageResponse } from "../interfaces";
+import { IGatewayRequest } from "../interfaces";
+import { IGatewayResponse } from "../interfaces";
 import { HubArea } from "../HubArea";
 
 export function isWindowRequest<T extends object>(
   value: any
-): value is IWindowRequest<T> {
+): value is IGatewayRequest<T> {
   const conditions: boolean[] = [
     typeof value?.windowId === "string",
     typeof value?.messageType === "string",
@@ -14,9 +14,9 @@ export function isWindowRequest<T extends object>(
   return conditions.every((condition) => condition === true);
 }
 
-export function isWindowMessageResponse(
+export function isWindowGatewayResponse(
   value: any
-): value is IWindowMessageResponse<object | void> {
+): value is IGatewayResponse<object | void> {
   const conditions: boolean[] = [
     typeof value?.messageId === "string",
     typeof value?.messageType === "string",

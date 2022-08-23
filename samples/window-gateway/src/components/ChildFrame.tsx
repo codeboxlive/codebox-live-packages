@@ -1,10 +1,10 @@
 import {
   HubArea,
-  WindowMessagingHub,
-  WindowMessenger,
-} from "@codeboxlive/window-messaging";
+  WindowGatewayHub,
+  WindowGateway,
+} from "@codeboxlive/window-gateway";
 import { useEffect, useRef, useState } from "react";
-import { HUB_KEY, TEST_MESSAGE_KEY, TEST_REQUEST_KEY } from "../constants";
+import { HUB_KEY } from "../constants";
 import {
   ITestHubAreaRequests,
   ITestMessageBody,
@@ -32,12 +32,12 @@ export class ChildTestHubArea extends HubArea<ITestHubAreaRequests> {
 
   // Declare requestWith handler for initiating a new request to a given iFrame window
   public override sendRequestWith(
-    messenger: WindowMessenger,
+    gateway: WindowGateway,
     bindThis = this
   ): ITestHubAreaRequests {
     return {
       getTransformedValue(body: ITestRequestBody): Promise<ITestResponse> {
-        return bindThis.sendRequest(messenger, this.getTransformedValue, body);
+        return bindThis.sendRequest(gateway, this.getTransformedValue, body);
       },
       sendRandomValue(body: ITestMessageBody): Promise<void> {
         return Promise.reject(
@@ -52,7 +52,7 @@ export class ChildTestHubArea extends HubArea<ITestHubAreaRequests> {
 
 // View for ChildFrame
 function ChildFrame() {
-  const [windowMessenger, setWindowMessenger] = useState<WindowMessenger>();
+  const [gateway, setGateway] = useState<WindowGateway>();
 
   const [number, setNumber] = useState(0);
   const [randomNumber, setRandomNumber] = useState<number>();
@@ -65,27 +65,27 @@ function ChildFrame() {
     initializedRef.current = true;
     const setupHub = async () => {
       // Set up hub
-      const hub = new WindowMessagingHub(
+      const hub = new WindowGatewayHub(
         HUB_KEY,
         [window.location.origin],
         [hubAreaRef.current]
       );
-      const parentMessenger = await hub.registerWindowMessenger(parent);
-      setWindowMessenger(parentMessenger);
+      const parentGateway = await hub.registerGateway(parent);
+      setGateway(parentGateway);
     };
     setupHub();
   });
 
   return (
     <>
-      {!windowMessenger && <div>{"loading..."}</div>}
-      {windowMessenger && (
+      {!gateway && <div>{"loading..."}</div>}
+      {gateway && (
         <>
           <button
             onClick={() => {
               // Send a request to parent to change the number
               hubAreaRef.current
-                .sendRequestWith(windowMessenger!)
+                .sendRequestWith(gateway!)
                 .getTransformedValue({
                   value: number,
                 })

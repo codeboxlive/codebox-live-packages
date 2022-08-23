@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
-import { IWindowMessageResponse, IWindowRequest } from "./interfaces";
+import { IGatewayResponse, IGatewayRequest } from "./interfaces";
 
-export class MessageRequestCallbacks<T> {
+class GatewayRequestCallbacks<T> {
   public readonly resolveCallback: (arg0: T) => void;
   public readonly rejectCallback: (error: Error) => void;
 
@@ -14,14 +14,14 @@ export class MessageRequestCallbacks<T> {
   }
 }
 
-export class WindowMessenger {
+export class WindowGateway {
   private readonly hubKey: string;
   private readonly _id: string;
   private readonly localWindowId: string;
   private readonly otherWindow: Window;
   private readonly pendingRequests = new Map<
     string,
-    MessageRequestCallbacks<any>
+    GatewayRequestCallbacks<any>
   >();
 
   constructor(
@@ -64,7 +64,7 @@ export class WindowMessenger {
       const messageId = uuid();
       this.pendingRequests.set(
         messageId,
-        new MessageRequestCallbacks<TResponse>(resolve, reject)
+        new GatewayRequestCallbacks<TResponse>(resolve, reject)
       );
       this.sendMessageToWindow({
         hubKey: this.hubKey,
@@ -83,7 +83,7 @@ export class WindowMessenger {
    *
    * @param response response information.
    */
-  public sendRequestResponse(response: IWindowMessageResponse<object | void>) {
+  public sendRequestResponse(response: IGatewayResponse<object | void>) {
     this.sendMessageToWindow({
       hubKey: this.hubKey,
       windowId: this._id,
@@ -97,9 +97,7 @@ export class WindowMessenger {
    *
    * @param response response information.
    */
-  public onReceivedWindowMessage(
-    response: IWindowMessageResponse<object | void>
-  ) {
+  public onReceivedWindowMessage(response: IGatewayResponse<object | void>) {
     const pendingRequest = this.pendingRequests.get(response.messageId);
     if (pendingRequest) {
       try {
@@ -126,7 +124,7 @@ export class WindowMessenger {
    * SECTION: private methods
    */
 
-  private sendMessageToWindow(message: IWindowRequest<object | undefined>) {
+  private sendMessageToWindow(message: IGatewayRequest<object | undefined>) {
     return new Promise<void>((resolve, reject) => {
       if (this.otherWindow === window) {
         reject(
