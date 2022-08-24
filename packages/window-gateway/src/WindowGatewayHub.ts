@@ -125,6 +125,14 @@ export class WindowGatewayHub extends EventEmitter {
   }
 
   /**
+   * Stop listening for changes.
+   */
+   public dispose() {
+    // TODO: send message to window that it was unregistered
+    window.removeEventListener("message", this.onIncomingMessage.bind(this));
+  }
+
+  /**
    * MARK: private methods
    */
 

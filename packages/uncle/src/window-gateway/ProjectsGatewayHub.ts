@@ -57,6 +57,7 @@ export class ProjectsGatewayHub {
       );
     }
     if (!this.isInitialized) {
+      this._isInitialized = true;
       this.gatewayHub = new WindowGatewayHub(
         CODEBOX_HUB_KEY,
         AUTHORIZED_ORIGINS,
