@@ -1,12 +1,6 @@
 import { CODEBOX_HUB_KEY } from "@codeboxlive/hub-interfaces";
 import { WindowGatewayHub, WindowGateway } from "@codeboxlive/window-gateway";
-import { ALL_HUB_AREAS, UNKNOWN_ERROR } from "../constants";
-
-const AUTHORIZED_ORIGINS: string[] = [
-  "https://live-share-sandbox.vercel.app",
-  "http://localhost:3000",
-  "http://127.0.0.1:5173",
-];
+import { ALL_HUB_AREAS, ALL_ORIGINS, UNKNOWN_ERROR } from "../constants";
 
 export class CodeboxLiveGateway {
   /**
@@ -45,7 +39,7 @@ export class CodeboxLiveGateway {
     if (!this.isInitialized) {
       this.messagingHub = new WindowGatewayHub(
         CODEBOX_HUB_KEY,
-        AUTHORIZED_ORIGINS,
+        ALL_ORIGINS,
         ALL_HUB_AREAS
       );
       try {

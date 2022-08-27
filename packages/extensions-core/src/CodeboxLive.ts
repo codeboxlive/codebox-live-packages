@@ -2,7 +2,7 @@ import { CodeboxLiveGateway } from "./window-gateway";
 import { IFluidRequests } from "@codeboxlive/hub-interfaces";
 import { FLUID_HUB_AREAS } from "./constants";
 
-export class CodeboxLiveClient {
+export class CodeboxLive {
   /**
    * MARK: Static variables
    */
@@ -30,7 +30,7 @@ export class CodeboxLiveClient {
    */
 
   /**
-   * Initialize the CodeboxLiveClient for use with parent gateway
+   * Initialize the CodeboxLive for use with parent gateway
    */
   public static async initialize(): Promise<void> {
     return CodeboxLiveGateway.initializeIfNeeded();

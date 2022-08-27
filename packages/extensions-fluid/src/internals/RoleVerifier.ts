@@ -6,7 +6,7 @@
  * See license: https://github.com/microsoft/live-share-sdk/blob/main/LICENSE
  */
 import { IRoleVerifier, UserMeetingRole } from "@microsoft/live-share";
-import { CodeboxLiveClient } from "@codeboxlive/extensions-core";
+import { CodeboxLive } from "@codeboxlive/extensions-core";
 import { UserRole } from "@codeboxlive/hub-interfaces";
 
 /**
@@ -32,7 +32,7 @@ export class RoleVerifier implements IRoleVerifier {
     if (this.roleCache.has(clientId)) {
       roles = this.roleCache.get(clientId)!;
     } else {
-      const rolesResponse = await CodeboxLiveClient.fluid.getUserRoles({
+      const rolesResponse = await CodeboxLive.fluid.getUserRoles({
         clientId,
       });
       roles = rolesResponse.userRoles!;
@@ -42,7 +42,7 @@ export class RoleVerifier implements IRoleVerifier {
   }
 
   public async registerClientId(clientId: string): Promise<UserMeetingRole[]> {
-    const rolesResponse = await CodeboxLiveClient.fluid.registerClientId({
+    const rolesResponse = await CodeboxLive.fluid.registerClientId({
       clientId,
     });
     return Promise.resolve(

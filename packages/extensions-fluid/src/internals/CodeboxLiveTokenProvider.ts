@@ -1,4 +1,4 @@
-import { CodeboxLiveClient } from "@codeboxlive/extensions-core";
+import { CodeboxLive } from "@codeboxlive/extensions-core";
 import { ITokenProvider, ITokenResponse } from "@fluidframework/azure-client";
 
 /**
@@ -40,7 +40,7 @@ export class CodeboxLiveTokenProvider implements ITokenProvider {
         this._cachedDocumentId !== documentId,
       ].includes(true)
     ) {
-      const tokenInfo = await CodeboxLiveClient.fluid.getFluidToken({
+      const tokenInfo = await CodeboxLive.fluid.getFluidToken({
         containerId: documentId,
       });
       this._cachedToken = tokenInfo.token;

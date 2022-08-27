@@ -7,7 +7,7 @@
  */
 
 import { type ITimestampProvider } from "@microsoft/live-share";
-import { CodeboxLiveClient } from "@codeboxlive/extensions-core";
+import { CodeboxLive } from "@codeboxlive/extensions-core";
 
 const SHARED_CLOCK_IMPROVE_ACCURACY_INTERVAL = 5 * 1000;
 const SHARED_CLOCK_IMPROVE_ACCURACY_ATTEMPTS = 5;
@@ -137,7 +137,7 @@ export class SharedClock implements ITimestampProvider {
   private async getSessionTimeOffset(): Promise<IServerTimeOffset> {
     // Get time from server and measure request time
     const startCall = performance.now();
-    const serverTime = await CodeboxLiveClient.fluid.getNtpTime();
+    const serverTime = await CodeboxLive.fluid.getNtpTime();
     const endCall = performance.now();
     const now = new Date().getTime();
 

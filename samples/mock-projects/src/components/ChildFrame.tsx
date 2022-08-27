@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CodeboxLiveClient } from "@codeboxlive/extensions-core";
+import { CodeboxLive } from "@codeboxlive/extensions-core";
 
 // View for ChildFrame
 function ChildFrame() {
@@ -16,7 +16,7 @@ function ChildFrame() {
     const setupHub = async () => {
       // Set up hub
       try {
-        await CodeboxLiveClient.initialize();
+        await CodeboxLive.initialize();
       } catch (err: any) {
         if (err instanceof Error) {
           setError(err);
@@ -36,7 +36,7 @@ function ChildFrame() {
           <div>{lastResponse}</div>
           <button
             onClick={async () => {
-              const response = await CodeboxLiveClient.fluid.getTenantInfo();
+              const response = await CodeboxLive.fluid.getTenantInfo();
               setLastResponse(JSON.stringify(response));
             }}
           >
@@ -44,8 +44,7 @@ function ChildFrame() {
           </button>
           <button
             onClick={async () => {
-              const response =
-                await CodeboxLiveClient.fluid.getFluidContainerId();
+              const response = await CodeboxLive.fluid.getFluidContainerId();
               setLastResponse(JSON.stringify(response));
             }}
           >
@@ -53,10 +52,9 @@ function ChildFrame() {
           </button>
           <button
             onClick={async () => {
-              const response =
-                await CodeboxLiveClient.fluid.setFluidContainerId({
-                  containerId: "MOCK-CONTAINER-ID",
-                });
+              const response = await CodeboxLive.fluid.setFluidContainerId({
+                containerId: "MOCK-CONTAINER-ID",
+              });
               setLastResponse(JSON.stringify(response));
             }}
           >
@@ -64,7 +62,7 @@ function ChildFrame() {
           </button>
           <button
             onClick={async () => {
-              const response = await CodeboxLiveClient.fluid.getFluidToken({
+              const response = await CodeboxLive.fluid.getFluidToken({
                 containerId: "MOCK-CONTAINER-ID",
               });
               setLastResponse(JSON.stringify(response));
@@ -74,7 +72,7 @@ function ChildFrame() {
           </button>
           <button
             onClick={async () => {
-              const response = await CodeboxLiveClient.fluid.getNtpTime();
+              const response = await CodeboxLive.fluid.getNtpTime();
               setLastResponse(JSON.stringify(response));
             }}
           >
@@ -82,7 +80,7 @@ function ChildFrame() {
           </button>
           <button
             onClick={async () => {
-              const response = await CodeboxLiveClient.fluid.getUserRoles({
+              const response = await CodeboxLive.fluid.getUserRoles({
                 clientId: "USER-ID",
               });
               setLastResponse(JSON.stringify(response));
@@ -92,7 +90,7 @@ function ChildFrame() {
           </button>
           <button
             onClick={async () => {
-              const response = await CodeboxLiveClient.fluid.registerClientId({
+              const response = await CodeboxLive.fluid.registerClientId({
                 clientId: "USER-ID",
               });
               setLastResponse(JSON.stringify(response));

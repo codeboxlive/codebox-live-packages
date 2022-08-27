@@ -14,14 +14,10 @@ import {
   ITelemetryBaseLogger,
 } from "@fluidframework/azure-client";
 import { RoleVerifier, SharedClock } from "./internals";
-import { CodeboxLiveClient } from "@codeboxlive/extensions-core";
+import { CodeboxLive } from "@codeboxlive/extensions-core";
 import { InsecureTokenProvider } from "@fluidframework/test-client-utils";
 import { EphemeralEvent } from "@microsoft/live-share";
 import { CodeboxLiveTokenProvider } from "./internals/CodeboxLiveTokenProvider";
-
-export const AUTHORIZED_PARENT_ORIGINS = [
-  "https://live-share-sandbox.vercel.app",
-];
 
 /**
  * Options used to configure the `CodeboxLiveFluidClient` class.
@@ -96,7 +92,7 @@ export class CodeboxLiveFluidClient {
       // Initialize FRS connection config
       let config: AzureConnectionConfig | undefined = this._options.connection;
       if (!config) {
-        const frsTenantInfo = await CodeboxLiveClient.fluid.getTenantInfo();
+        const frsTenantInfo = await CodeboxLive.fluid.getTenantInfo();
 
         // Compute endpoint
         let endpoint = frsTenantInfo.serviceEndpoint;
@@ -212,7 +208,7 @@ export class CodeboxLiveFluidClient {
     created: boolean;
   }> {
     // Get container ID mapping
-    const containerInfo = await CodeboxLiveClient.fluid.getFluidContainerId();
+    const containerInfo = await CodeboxLive.fluid.getFluidContainerId();
     const retryAfter = 500;
 
     // Create container on first access
@@ -268,7 +264,7 @@ export class CodeboxLiveFluidClient {
     const newContainerId = await container.attach();
 
     // Attempt to save container ID mapping
-    const containerInfo = await CodeboxLiveClient.fluid.setFluidContainerId({
+    const containerInfo = await CodeboxLive.fluid.setFluidContainerId({
       containerId: newContainerId,
     });
     if (containerInfo.containerId !== newContainerId) {
