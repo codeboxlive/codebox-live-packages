@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/extensions-fluid",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Codebox Live project Fluid extension, allowing you to use a free Fluid container in a Codebox Live sandbox.",
   "author": "Ryan Bliss",
   "license": "SEE LICENSE IN LICENSE",
@@ -13,8 +13,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@codeboxlive/extensions-core": "^0.1.7",
-    "@codeboxlive/hub-interfaces": "^0.1.7",
+    "@codeboxlive/extensions-core": "^0.2.0",
+    "@codeboxlive/hub-interfaces": "^0.2.0",
     "@fluidframework/azure-client": "~1.0.2",
     "@microsoft/live-share": "~0.4.0",
     "fluid-framework": "~1.2.3"
