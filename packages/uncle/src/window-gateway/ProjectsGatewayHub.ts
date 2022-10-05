@@ -34,10 +34,6 @@ export class ProjectsGatewayHub {
    * MARK: static getters and setters
    */
 
-  public static get shouldInitialize(): boolean {
-    return window.self === window.top;
-  }
-
   public static get isInitialized(): boolean {
     return this._isInitialized;
   }
@@ -51,11 +47,6 @@ export class ProjectsGatewayHub {
    */
 
   public static async initializeIfNeeded(hubAreas: HubArea[]): Promise<void> {
-    if (!this.shouldInitialize) {
-      throw new Error(
-        "CodeboxLiveClient: cannot initialize unless within an iFrame"
-      );
-    }
     if (!this.isInitialized) {
       this._isInitialized = true;
       this.gatewayHub = new WindowGatewayHub(

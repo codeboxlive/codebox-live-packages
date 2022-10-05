@@ -14,10 +14,6 @@ export class CodeboxLiveGateway {
    * MARK: static getters and setters
    */
 
-  public static get shouldInitialize(): boolean {
-    return window.self !== window.top;
-  }
-
   public static get isInitialized(): boolean {
     return !!this._parentGateway;
   }
@@ -31,11 +27,6 @@ export class CodeboxLiveGateway {
    */
 
   public static async initializeIfNeeded(): Promise<void> {
-    if (!this.shouldInitialize) {
-      throw new Error(
-        "CodeboxLiveClient: cannot initialize unless within an iFrame"
-      );
-    }
     if (!this.isInitialized) {
       this.messagingHub = new WindowGatewayHub(
         CODEBOX_HUB_KEY,
