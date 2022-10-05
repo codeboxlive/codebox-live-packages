@@ -1,7 +1,7 @@
 {
   "name": "@codeboxlive/window-gateway",
   "version": "0.2.0",
-  "description": "Gateway between windows to enable bi-directional iFrame window post messages.",
+  "description": "Gateway between iFrame windows to enable bi-directional iFrame window post messages using promises.",
   "author": "Ryan Bliss",
   "license": "MIT",
   "main": "./bin/index.js",

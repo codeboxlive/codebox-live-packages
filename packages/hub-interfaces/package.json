@@ -1,7 +1,7 @@
 {
   "name": "@codeboxlive/hub-interfaces",
   "version": "0.2.0",
-  "description": "Codebox Live gateway hub interfaces.",
+  "description": "Codebox Live gateway hub interfaces shared across Gateway packages.",
   "author": "Ryan Bliss",
   "license": "MIT",
   "main": "./bin/index.js",

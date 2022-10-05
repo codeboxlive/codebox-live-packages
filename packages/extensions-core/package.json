@@ -1,7 +1,7 @@
 {
   "name": "@codeboxlive/extensions-core",
   "version": "0.2.0",
-  "description": "Codebox Live sandbox project core extension.",
+  "description": "Codebox Live sandbox project core gateway extension.",
   "author": "Ryan Bliss",
   "license": "MIT",
   "main": "./bin/index.js",
