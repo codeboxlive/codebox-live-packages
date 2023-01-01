@@ -1,7 +1,7 @@
 {
   "name": "mock-projects",
   "private": true,
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codeboxlive/extensions-core": "^0.3.2",
-    "@codeboxlive/hub-interfaces": "^0.3.2",
-    "@codeboxlive/uncle": "^0.3.2",
+    "@codeboxlive/extensions-core": "^0.3.3",
+    "@codeboxlive/hub-interfaces": "^0.3.3",
+    "@codeboxlive/uncle": "^0.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

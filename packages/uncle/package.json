@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/uncle",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Codebox Live gateway of root app, codenamed uncle.",
   "author": "Ryan Bliss",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@codeboxlive/window-gateway": "^0.3.2"
+    "@codeboxlive/window-gateway": "^0.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
