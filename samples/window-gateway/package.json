@@ -1,7 +1,7 @@
 {
   "name": "child-window-gateway",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codeboxlive/window-gateway": "^0.3.0",
+    "@codeboxlive/window-gateway": "^0.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
