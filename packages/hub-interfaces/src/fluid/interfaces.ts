@@ -31,16 +31,65 @@ export interface IFluidTokenRequestBody {
  * Response for Fluid tenant info
  */
 export interface IFluidTenantInfo {
-  tenantId?: string;
+  tenantId: string;
   serviceEndpoint: string;
   type: "local" | "remote";
+  /**
+   * @deprecated
+   * As of Fluid 1.0 this configuration information has been deprecated in favor of
+   * `serviceEndpoint`.
+   */
+  ordererEndpoint: string;
+  /**
+   * @deprecated
+   * As of Fluid 1.0 this configuration information has been deprecated in favor of
+   * `serviceEndpoint`.
+   */
+  storageEndpoint: string;
+}
+/**
+ * State of the current Live Share sessions backing fluid container.
+ */
+export enum ContainerState {
+  /**
+   * The call to `LiveShareHost.setContainerId()` successfully created the container mapping
+   * for the current Live Share session.
+   */
+  added = "Added",
+
+  /**
+   * A container mapping for the current Live Share Session already exists and should be used
+   * when joining the sessions Fluid container.
+   */
+  alreadyExists = "AlreadyExists",
+
+  /**
+   * The call to `LiveShareHost.setContainerId()` failed to create the container mapping due to
+   * another client having already set the container ID for the current Live Share session.
+   */
+  conflict = "Conflict",
+
+  /**
+   * A container mapping for the current Live Share session doesn't exist yet.
+   */
+  notFound = "NotFound",
 }
 /**
  * Response for Fluid container info
  */
 export interface IFluidContainerInfo {
+  /**
+   * State of the containerId mapping.
+   */
+  containerState: ContainerState;
   containerId: string | undefined;
   shouldCreate: boolean;
+  /**
+   * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready but
+   * another client is creating it. The local client should wait the specified amount of time and
+   * then ask for the container info again.
+   */
+  retryAfter: number;
 }
 /**
  * Set container ID request body

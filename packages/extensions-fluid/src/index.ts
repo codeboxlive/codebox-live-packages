@@ -1,1 +1,1 @@
-export * from "./CodeboxLiveFluidClient";
+export * from "./CodeboxLiveHost";

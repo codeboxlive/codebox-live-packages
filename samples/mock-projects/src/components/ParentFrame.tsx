@@ -12,6 +12,7 @@ import {
   IRegisterClientIdInfo,
   IFluidRequests,
   UserRole,
+  ContainerState,
 } from "@codeboxlive/hub-interfaces";
 
 // View for ParentFrame
@@ -28,7 +29,10 @@ function ParentFrame() {
       async getTenantInfo(): Promise<IFluidTenantInfo> {
         return Promise.resolve({
           serviceEndpoint: "http://localhost:7070",
+          ordererEndpoint: "",
+          storageEndpoint: "",
           type: "local",
+          tenantId: "",
         });
       },
       async getFluidToken(
@@ -42,6 +46,8 @@ function ParentFrame() {
         return Promise.resolve({
           containerId: containerIdRef.current,
           shouldCreate: !containerIdRef.current,
+          containerState: ContainerState.alreadyExists,
+          retryAfter: 30,
         });
       },
       async setFluidContainerId(
@@ -51,6 +57,8 @@ function ParentFrame() {
         return Promise.resolve({
           containerId: containerIdRef.current,
           shouldCreate: !containerIdRef.current,
+          containerState: ContainerState.added,
+          retryAfter: 30,
         });
       },
       async getNtpTime(): Promise<INtpTimeInfo> {
