@@ -22,7 +22,7 @@
     "typescript": "^4.6.4"
   },
   "peerDependencies": {
-    "@codeboxlive/hub-interfaces": "^0.2.0"
+    "@codeboxlive/hub-interfaces": "^0.3.0"
   },
   "repository": {
     "directory": "packages/uncle",
