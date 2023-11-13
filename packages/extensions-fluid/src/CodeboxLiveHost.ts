@@ -2,20 +2,19 @@ import {
   IClientInfo,
   IFluidContainerInfo,
   IFluidTenantInfo,
-  ILiveShareHost,
   INtpTimeInfo,
-  UserMeetingRole,
-} from "@microsoft/live-share";
+  UserRole,
+} from "@codeboxlive/hub-interfaces";
 import { CodeboxLive } from "@codeboxlive/extensions-core";
 
-function isUserMeetingRole(value: any): value is UserMeetingRole {
-  if (Object.values(UserMeetingRole).includes(value)) {
+function isUserMeetingRole(value: any): value is UserRole {
+  if (Object.values(UserRole).includes(value)) {
     return true;
   }
   return false;
 }
 
-function isUserMeetingRoleList(value: any): value is UserMeetingRole[] {
+function isUserMeetingRoleList(value: any): value is UserRole[] {
   if (Array.isArray(value)) {
     return value.every((role) => isUserMeetingRole(role));
   }
@@ -33,7 +32,7 @@ function isClientInfo(value: any): value is IClientInfo {
 /**
  * Codebox ILiveShareHost class
  */
-export class CodeboxLiveHost implements ILiveShareHost {
+export class CodeboxLiveHost {
   async getFluidTenantInfo(): Promise<IFluidTenantInfo> {
     const frsTenantInfo = await CodeboxLive.fluid.getTenantInfo();
     return frsTenantInfo;
@@ -58,7 +57,7 @@ export class CodeboxLiveHost implements ILiveShareHost {
     const nptInfo = await CodeboxLive.fluid.getNtpTime();
     return nptInfo;
   }
-  async registerClientId(clientId: string): Promise<UserMeetingRole[]> {
+  async registerClientId(clientId: string): Promise<UserRole[]> {
     const roleInfo = await CodeboxLive.fluid.registerClientId({
       clientId,
     });
@@ -67,9 +66,7 @@ export class CodeboxLiveHost implements ILiveShareHost {
     }
     return [];
   }
-  async getClientRoles(
-    clientId: string
-  ): Promise<UserMeetingRole[] | undefined> {
+  async getClientRoles(clientId: string): Promise<UserRole[] | undefined> {
     const roleInfo = await CodeboxLive.fluid.getUserRoles({
       clientId,
     });

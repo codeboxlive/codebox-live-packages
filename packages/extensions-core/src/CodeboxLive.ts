@@ -7,7 +7,7 @@ import { FLUID_HUB_AREAS } from "./constants";
  */
 export class CodeboxLive {
   /**
-   * MARK: Static variables
+   * MARK: Static variables.
    */
 
   /**

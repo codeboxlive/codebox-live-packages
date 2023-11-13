@@ -4,7 +4,7 @@ import { ProjectsGatewayHub } from "./window-gateway";
 
 export class UncleGatewayHub {
   /**
-   * MARK: Static variables
+   * MARK: Static variables.
    */
 
   private static fluid?: FluidRequests;
