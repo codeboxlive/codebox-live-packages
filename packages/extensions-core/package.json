@@ -1,6 +1,6 @@
 {
   "name": "@codeboxlive/extensions-core",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Codebox Live sandbox project core gateway extension.",
   "author": "Ryan Bliss",
   "license": "MIT",
@@ -13,8 +13,8 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@codeboxlive/hub-interfaces": "^0.4.0",
-    "@codeboxlive/window-gateway": "^0.4.0"
+    "@codeboxlive/hub-interfaces": "^0.4.1",
+    "@codeboxlive/window-gateway": "^0.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
