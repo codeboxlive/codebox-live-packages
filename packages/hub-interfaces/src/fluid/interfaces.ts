@@ -154,7 +154,7 @@ export interface IRegisterClientIdInfo {
  */
 export interface IClientInfo {
   /**
-   * The user identifier that corresponds to the provided client identifier.
+   * The codebox user identifier that corresponds to the provided client identifier.
    */
   userId: string;
   /**

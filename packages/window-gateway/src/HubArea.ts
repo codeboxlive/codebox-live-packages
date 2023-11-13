@@ -22,6 +22,9 @@ function toMappedHandler<TypedRequestHandlers extends RequestHandlers>(
   return mappedRequestHandlers as TypedRequestHandlers;
 }
 
+/**
+ * Class for a hub area, which could be either a parent or child window.
+ */
 export class HubArea<
   TypedRequestHandlers extends RequestHandlers = RequestHandlers
 > {

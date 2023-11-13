@@ -30,6 +30,9 @@ function isClientInfo(value: any): value is IClientInfo {
   ].every((val) => val === true);
 }
 
+/**
+ * Codebox ILiveShareHost class
+ */
 export class CodeboxLiveHost implements ILiveShareHost {
   async getFluidTenantInfo(): Promise<IFluidTenantInfo> {
     const frsTenantInfo = await CodeboxLive.fluid.getTenantInfo();

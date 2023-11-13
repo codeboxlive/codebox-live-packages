@@ -2,6 +2,9 @@ import { CodeboxLiveGateway } from "./window-gateway";
 import { IFluidRequests } from "@codeboxlive/hub-interfaces";
 import { FLUID_HUB_AREAS } from "./constants";
 
+/**
+ * Class for interacting with the CodeboxLive host
+ */
 export class CodeboxLive {
   /**
    * MARK: Static variables
