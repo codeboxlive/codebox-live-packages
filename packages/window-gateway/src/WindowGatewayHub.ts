@@ -19,7 +19,7 @@ export interface IWindowGatewayHubEvents {
 }
 
 /**
- * Central hub overseeing all window gateways
+ * Central hub overseeing all window gateways.
  */
 export class WindowGatewayHub extends EventEmitter {
   private readonly hubKey: string;
@@ -127,7 +127,7 @@ export class WindowGatewayHub extends EventEmitter {
   /**
    * Stop listening for changes.
    */
-   public dispose() {
+  public dispose() {
     // TODO: send message to window that it was unregistered
     window.removeEventListener("message", this.onIncomingMessage.bind(this));
   }
@@ -153,7 +153,7 @@ export class WindowGatewayHub extends EventEmitter {
     // Verify that source is a window
     if (isWindow(source)) {
       try {
-        const decoded = JSON.parse(data);
+        const decoded: any = JSON.parse(data);
         if (isWindowRequest(decoded)) {
           // If message is from a different gateway hub, ignore the message
           if (decoded.hubKey !== this.hubKey) return;

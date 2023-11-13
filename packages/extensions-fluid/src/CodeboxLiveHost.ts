@@ -1,4 +1,5 @@
 import {
+  IClientInfo,
   IFluidContainerInfo,
   IFluidTenantInfo,
   ILiveShareHost,
@@ -19,6 +20,14 @@ function isUserMeetingRoleList(value: any): value is UserMeetingRole[] {
     return value.every((role) => isUserMeetingRole(role));
   }
   return false;
+}
+
+function isClientInfo(value: any): value is IClientInfo {
+  return [
+    typeof value.userId === "string",
+    isUserMeetingRoleList(value.roles),
+    value.displayName === undefined || typeof value.displayName === "string",
+  ].every((val) => val === true);
 }
 
 export class CodeboxLiveHost implements ILiveShareHost {
@@ -65,5 +74,16 @@ export class CodeboxLiveHost implements ILiveShareHost {
       return roleInfo.userRoles;
     }
     return [];
+  }
+  async getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
+    const clientInfo = await CodeboxLive.fluid.getClientInfo({
+      clientId,
+    });
+    if (clientInfo === undefined || isClientInfo(clientInfo)) {
+      return clientInfo;
+    }
+    throw new Error(
+      `CodeboxLiveHost.getClientInfo: invalid response of ${clientInfo}`
+    );
   }
 }

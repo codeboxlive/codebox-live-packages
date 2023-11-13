@@ -7,15 +7,15 @@ import {
 } from "@codeboxlive/window-gateway";
 
 const allSandpackUrls: string[] = [];
-for (let a = 0; a < 10; a++) {
-  for (let b = 0; b < 10; b++) {
-    for (let c = 0; c < 10; c++) {
+for (let a = 0; a < 50; a++) {
+  for (let b = 0; b < 50; b++) {
+    for (let c = 0; c < 50; c++) {
       allSandpackUrls.push(`https://${a}-${b}-${c}-sandpack.codesandbox.io`);
     }
   }
 }
 const AUTHORIZED_ORIGINS: string[] = [
-  "https://live-share-sandbox.vercel.app",
+  "https://www.codebox.live",
   "http://localhost:3000",
   "http://127.0.0.1:5173",
   ...allSandpackUrls,

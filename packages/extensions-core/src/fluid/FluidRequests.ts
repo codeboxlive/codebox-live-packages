@@ -10,6 +10,7 @@ import {
   IUserRolesMessageBody,
   IRegisterClientIdInfo,
   IFluidRequests,
+  IClientInfo,
   FLUID_AREA_PATH,
 } from "@codeboxlive/hub-interfaces";
 import { HubArea, WindowGateway } from "@codeboxlive/window-gateway";
@@ -51,6 +52,11 @@ export class FluidRequests extends HubArea<IFluidRequests> {
       },
       async getUserRoles(body: IUserRolesMessageBody): Promise<IUserRolesInfo> {
         return bindThis.sendRequest(gateway, this.getUserRoles, body);
+      },
+      async getClientInfo(
+        body: IUserRolesMessageBody
+      ): Promise<IClientInfo | undefined> {
+        return bindThis.sendRequest(gateway, this.getClientInfo, body);
       },
     };
   }

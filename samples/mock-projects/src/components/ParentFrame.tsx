@@ -13,6 +13,7 @@ import {
   IFluidRequests,
   UserRole,
   ContainerState,
+  IClientInfo,
 } from "@codeboxlive/hub-interfaces";
 
 // View for ParentFrame
@@ -91,6 +92,22 @@ function ParentFrame() {
             UserRole.presenter,
             UserRole.attendee,
           ],
+        });
+      },
+      async getClientInfo(
+        body: IUserRolesMessageBody
+      ): Promise<IClientInfo | undefined> {
+        if (clientIdRef.current !== body.clientId) {
+          return Promise.resolve({
+            userId: "user1",
+            displayName: "User 1",
+            roles: [],
+          });
+        }
+        return Promise.resolve({
+          userId: "user2",
+          displayName: "User 2",
+          roles: [UserRole.organizer, UserRole.presenter, UserRole.attendee],
         });
       },
     };

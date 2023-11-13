@@ -12,6 +12,7 @@ export interface IFluidRequests extends RequestHandlers {
   getNtpTime(): Promise<INtpTimeInfo>;
   registerClientId(body: IUserRolesMessageBody): Promise<IRegisterClientIdInfo>;
   getUserRoles(body: IUserRolesMessageBody): Promise<IUserRolesInfo>;
+  getClientInfo(body: IUserRolesMessageBody): Promise<IClientInfo | undefined>;
 }
 
 /**
@@ -145,4 +146,23 @@ export interface IUserRolesMessageBody {
  */
 export interface IRegisterClientIdInfo {
   userRoles: UserRole[] | undefined;
+}
+
+/**
+ * Returned from `LiveShareHost.getClientInfo()` to specify the user information for a given `clientId`.
+ * Each user individually requests this data for each other user in the session, making it secure & trusted.
+ */
+export interface IClientInfo {
+  /**
+   * The user identifier that corresponds to the provided client identifier.
+   */
+  userId: string;
+  /**
+   * List of roles of the user.
+   */
+  roles: UserRole[];
+  /**
+   * Optional. The display name for the user.
+   */
+  displayName?: string;
 }

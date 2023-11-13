@@ -9,6 +9,7 @@ import {
   IUserRolesMessageBody,
   IRegisterClientIdInfo,
   IFluidRequests,
+  IClientInfo,
 } from "@codeboxlive/hub-interfaces";
 
 /**
@@ -52,6 +53,13 @@ export const FLUID_REQUEST_HANDLERS: IFluidRequests = {
   async getUserRoles(body: IUserRolesMessageBody): Promise<IUserRolesInfo> {
     throw new Error(
       "FluidRequests.getUserRoles: Cannot request details from child sandbox hub."
+    );
+  },
+  async getClientInfo(
+    body: IUserRolesMessageBody
+  ): Promise<IClientInfo | undefined> {
+    throw new Error(
+      "FluidRequests.getClientInfo: Cannot request details from child sandbox hub."
     );
   },
 };

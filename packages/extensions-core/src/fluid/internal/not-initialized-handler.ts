@@ -9,6 +9,7 @@ import {
   IUserRolesMessageBody,
   IRegisterClientIdInfo,
   IFluidRequests,
+  IClientInfo,
 } from "@codeboxlive/hub-interfaces";
 
 /**
@@ -52,6 +53,13 @@ export const NOT_INITIALIZED_HANDLER: IFluidRequests = {
   async getUserRoles(body: IUserRolesMessageBody): Promise<IUserRolesInfo> {
     throw new Error(
       "FluidRequests.getUserRoles: not initialized. Use `await CodeSandboxClient.initialize()` and try again."
+    );
+  },
+  async getClientInfo(
+    body: IUserRolesMessageBody
+  ): Promise<IClientInfo | undefined> {
+    throw new Error(
+      "FluidRequests.getClientInfo: not initialized. Use `await CodeSandboxClient.initialize()` and try again."
     );
   },
 };
